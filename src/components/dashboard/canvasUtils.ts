@@ -1,32 +1,67 @@
 import { Canvas, FabricImage, FabricObject, Point } from 'fabric'
 import gsap from 'gsap'
 
-export const zoomIn = (canvas: Canvas) => {
-    const zoom = canvas.getZoom() * 1.1
-    if (zoom < 5) { // Limit max zoom
-    canvas.zoomToPoint(new Point(canvas.width / 2, canvas.height / 2), zoom)
-}}
-
-export const zoomOut = (canvas: Canvas) => {
-    const zoom = canvas.getZoom() * 0.9
-    if (zoom > 0.2) { // Limit min zoom
-        canvas.zoomToPoint(new Point(canvas.width / 2, canvas.height / 2), zoom)
+export const zoomIn = (canvas: Canvas, image: FabricImage | null) => {
+    if (image) {
+        const scale = Math.min(image.scaleX! * 1.1, 2);
+        image.set({
+            left: canvas.width / 2,
+            top: canvas.height / 2,
+            scaleX: scale,
+            scaleY: scale,
+            originX: 'center',
+            originY: 'center',
+        });
+        image.setCoords();
+        canvas.renderAll();
     }
 }
 
-export const flipHorizontal = (canvas: Canvas) => {
-    const activeObject = canvas.getActiveObject()
-    if (activeObject) {
-        activeObject.set('flipX', !activeObject.flipX)
-        canvas.renderAll()
+export const zoomOut = (canvas: Canvas, image: FabricImage | null) => {
+    if (image) {
+        const scale = Math.max(image.scaleX! * 0.9, 0.2);
+        image.set({
+            left: canvas.width / 2,
+            top: canvas.height / 2,
+            scaleX: scale,
+            scaleY: scale,
+            originX: 'center',
+            originY: 'center',
+        });
+        image.setCoords();
+        canvas.renderAll();
     }
 }
 
-export const flipVertical = (canvas: Canvas) => {
-    const activeObject = canvas.getActiveObject()
-    if (activeObject) {
-        activeObject.set('flipY', !activeObject.flipY)
-        canvas.renderAll()
+export const flipHorizontal = (canvas: Canvas, image?: FabricImage) => {
+    const flipObject = (obj: FabricObject) => {
+        obj.set('flipX', !obj.flipX);
+        canvas.renderAll();
+    };
+
+    if (image) {
+        flipObject(image);
+    } else {
+        const activeObject = canvas.getActiveObject();
+        if (activeObject) {
+            flipObject(activeObject);
+        }
+    }
+}
+
+export const flipVertical = (canvas: Canvas, image?: FabricImage) => {
+    const flipObject = (obj: FabricObject) => {
+        obj.set('flipY', !obj.flipY);
+        canvas.renderAll();
+    };
+
+    if (image) {
+        flipObject(image);
+    } else {
+        const activeObject = canvas.getActiveObject();
+        if (activeObject) {
+            flipObject(activeObject);
+        }
     }
 }
 

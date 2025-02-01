@@ -63,7 +63,7 @@ export const enableDrawingMode = (canvas: Canvas, shape: 'rect' | 'circle' | 'ar
             });
         } else if (shape === 'arrow') {
             shapeObject = new Line([startX, startY, startX, startY], {
-                stroke: 'black',
+                stroke: 'red',
                 strokeWidth: 2,
                 selectable: false,
             });
@@ -121,7 +121,7 @@ export const enableDrawingMode = (canvas: Canvas, shape: 'rect' | 'circle' | 'ar
                     },
                 ],
                 {
-                    fill: 'black',
+                    fill: 'red',
                     selectable: true,
                     evented: true,
                     originX: 'center',

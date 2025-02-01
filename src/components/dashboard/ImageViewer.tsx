@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react'
 import { rotate, setFullScreen, zoomIn, zoomOut } from './canvasUtils'
 import { setupMouseEvents } from './mouseEvents'
 import ViewerOptions from './ViewerOptions'
-import { set } from 'react-hook-form'
 
 const ImageViewer = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -25,12 +24,12 @@ const ImageViewer = () => {
         // 🎯 Keyboard Shortcuts
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === '=' || e.key === '+') {
-                zoomIn(newCanvas)
+                zoomIn(newCanvas, canvasImage)
             }
             if (e.key === '-') {
-                zoomOut(newCanvas)
+                zoomOut(newCanvas, canvasImage)
             }
-            if (e.key === 'r') rotate(newCanvas)
+            if (e.key === 'r' && canvasImage) rotate(newCanvas, canvasImage)
             if (e.key === 'Delete') {
                 const activeObject = newCanvas.getActiveObject()
                 if (activeObject) {

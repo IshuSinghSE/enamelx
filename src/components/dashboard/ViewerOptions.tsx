@@ -141,22 +141,22 @@ const ViewerOptions: React.FC<ViewerOptionsProps> = ({
                 <ActionButton
                     label="Zoom In"
                     icon={<ZoomIn />}
-                    onClick={() => canvas && zoomIn(canvas)}
+                    onClick={() => canvas && canvasImage && zoomIn(canvas, canvasImage)}
                 />
                 <ActionButton
                     label="Zoom Out"
                     icon={<ZoomOut />}
-                    onClick={() => canvas && zoomOut(canvas)}
+                    onClick={() => canvas && canvasImage && zoomOut(canvas, canvasImage)}
                 />
                 <ActionButton
                     label="Flip X"
                     icon={<FlipHorizontalIcon />}
-                    onClick={() => canvas && flipHorizontal(canvas)}
+                    onClick={() => canvas && canvasImage  && flipHorizontal(canvas, canvasImage)}
                 />
                 <ActionButton
                     label="Flip Y"
                     icon={<FlipVerticalIcon />}
-                    onClick={() => canvas && flipVertical(canvas)}
+                    onClick={() => canvas && canvasImage  && flipVertical(canvas, canvasImage)}
                 />
                 <ActionButton
                     label="Fit"
