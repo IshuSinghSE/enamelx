@@ -133,7 +133,7 @@ const ViewerOptions: React.FC<ViewerOptionsProps> = ({
         </div>
         <hr className="mt-2 w-full overflow-hidden lg:w-36 border-zinc-500 pt-2  lg:flex" />
         {/* <hr className="mt-2 border-zinc-500 pt-2" /> */}
-        <div className='flex  gap-x-2 lg:col-span-2 overflow-x-auto' style={{scrollbarWidth: 'none'}}>
+        <div className='flex lg:flex-wrap gap-x-2 lg:col-span-2 overflow-x-auto' style={{scrollbarWidth: 'none'}}>
         <ActionButton
           label="Box"
           icon={<Square />}
