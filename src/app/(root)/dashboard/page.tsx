@@ -69,9 +69,8 @@ const DashboardPage = () => {
   return (
     <section className="flex h-[calc(100vh - 48px)] w-full flex-col bg-muted lg:flex-row lg:overflow-hidden">
       <ImageViewer />
-
       {/* Right Panel - Options */}
-      <div className="hidden order-2 lg:flex w-64 flex-col items-start justify-start gap-4 border-l border-secondary bg-gradient-to-l from-neutral-800 to-stone-800 text-foreground p-4 lg:order-3 lg:h-[calc(100vh-64px)]">
+      <div className="w-full px-10 md:px-4 order-3 lg:flex md:w-64 flex-col items-start justify-start gap-4 border-l border-secondary bg-gradient-to-l from-neutral-800 to-stone-800 text-foreground p-4 lg:order-3 lg:h-[calc(100vh-64px)]">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
