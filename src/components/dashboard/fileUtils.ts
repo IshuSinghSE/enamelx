@@ -11,9 +11,6 @@ export const handleFileChange = (
 
     if (file) {
         const reader = new FileReader();
-        const url = URL.createObjectURL(file);
-        setImageSrc(url);
-
         reader.onload = (e) => {
             const imageElement = new Image();
             imageElement.src = e.target?.result as string;
@@ -21,8 +18,6 @@ export const handleFileChange = (
             imageElement.onload = () => {
                 const imageWidth = imageElement.naturalWidth;
                 const imageHeight = imageElement.naturalHeight;
-                imageElement.width = imageWidth;
-                imageElement.height = imageHeight;
 
                 const canvasWidth = canvas.getWidth();
                 const canvasHeight = canvas.getHeight();
@@ -35,10 +30,14 @@ export const handleFileChange = (
                 const fabricImage = new FabricImage(imageElement, {
                     scaleX: scale,
                     scaleY: scale,
+                    originX: 'center',
+                    originY: 'center',
+                    left: canvasWidth / 2,
+                    top: canvasHeight / 2,
                 });
 
-                setCanvasImage(fabricImage);
                 canvas.clear(); // Clear the canvas before adding the new image
+                setCanvasImage(fabricImage);
                 canvas.add(fabricImage);
                 canvas.setActiveObject(fabricImage);
                 canvas.centerObject(fabricImage);

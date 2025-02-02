@@ -33,7 +33,7 @@ export const zoomOut = (canvas: Canvas, image: FabricImage | null) => {
     }
 }
 
-export const flipHorizontal = (canvas: Canvas, image?: FabricImage) => {
+export const flipHorizontal = (canvas: Canvas, image?: FabricImage| null) => {
     const flipObject = (obj: FabricObject) => {
         obj.set('flipX', !obj.flipX);
         canvas.renderAll();
@@ -49,7 +49,7 @@ export const flipHorizontal = (canvas: Canvas, image?: FabricImage) => {
     }
 }
 
-export const flipVertical = (canvas: Canvas, image?: FabricImage) => {
+export const flipVertical = (canvas: Canvas, image?: FabricImage|null) => {
     const flipObject = (obj: FabricObject) => {
         obj.set('flipY', !obj.flipY);
         canvas.renderAll();

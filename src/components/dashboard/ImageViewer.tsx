@@ -29,7 +29,7 @@ const ImageViewer = () => {
             if (e.key === '-') {
                 zoomOut(newCanvas, canvasImage)
             }
-            if (e.key === 'r' && canvasImage) rotate(newCanvas, canvasImage)
+            if (e.key === 'r') rotate(newCanvas)
             if (e.key === 'Delete') {
                 const activeObject = newCanvas.getActiveObject()
                 if (activeObject) {
