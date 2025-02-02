@@ -36,9 +36,9 @@ export const enableDrawingMode = (canvas: Canvas, shape: 'rect' | 'circle' | 'ar
 
     canvas.selection = false; // Disable group selection
 
-    canvas.on('mouse:down', (options) => {
+    const onMouseDown = (options: any) => {
         isDrawing = true;
-        const pointer = canvas.getPointer(options.e);
+        const pointer = canvas.getScenePoint(options.e);
         startX = pointer.x;
         startY = pointer.y;
 
@@ -70,11 +70,11 @@ export const enableDrawingMode = (canvas: Canvas, shape: 'rect' | 'circle' | 'ar
         }
 
         canvas.add(shapeObject);
-    });
+    };
 
-    canvas.on('mouse:move', (options) => {
+    const onMouseMove = (options: any) => {
         if (!isDrawing) return;
-        const pointer = canvas.getPointer(options.e);
+        const pointer = canvas.getScenePoint(options.e);
 
         if (shape === 'rect') {
             shapeObject.set({
@@ -99,11 +99,11 @@ export const enableDrawingMode = (canvas: Canvas, shape: 'rect' | 'circle' | 'ar
         }
 
         canvas.renderAll();
-    });
+    };
 
-   canvas.on('mouse:up', () => {
+    const onMouseUp = () => {
         if (shape === 'arrow') {
-            const pointer = canvas.getViewportPoint(new MouseEvent('mousemove'));
+            const pointer = canvas.getScenePoint(new MouseEvent('mousemove'));
             const angle = Math.atan2(pointer.y - startY, pointer.x - startX);
             const arrowHeadLength = 10;
             const arrowHeadAngle = Math.PI / 6;
@@ -140,10 +140,15 @@ export const enableDrawingMode = (canvas: Canvas, shape: 'rect' | 'circle' | 'ar
 
         isDrawing = false;
         shapeObject.set({ selectable: true });
-        canvas.off('mouse:down');
-        canvas.off('mouse:move');
-        canvas.off('mouse:up');
-    });
+        canvas.selection = true; // Enable group selection
+        canvas.off('mouse:down', onMouseDown);
+        canvas.off('mouse:move', onMouseMove);
+        canvas.off('mouse:up', onMouseUp);
+    };
+
+    canvas.on('mouse:down', onMouseDown);
+    canvas.on('mouse:move', onMouseMove);
+    canvas.on('mouse:up', onMouseUp);
 }
 
 export const createLaserPointer = (canvas: Canvas) => {

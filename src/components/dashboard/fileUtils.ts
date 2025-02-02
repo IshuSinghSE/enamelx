@@ -34,6 +34,7 @@ export const handleFileChange = (
                     originY: 'center',
                     left: canvasWidth / 2,
                     top: canvasHeight / 2,
+                    selectable: false,
                 });
 
                 canvas.clear(); // Clear the canvas before adding the new image

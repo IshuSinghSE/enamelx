@@ -1,10 +1,8 @@
-"use client"
-import React from 'react'
-import ActionButton from '@/components/ActionButton'
-import { ZoomIn, ZoomOut, RotateCw, Edit3 } from 'lucide-react'
+'use client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 
+import ImageViewer from '@/components/dashboard/ImageViewer'
 import { toast } from '@/components/hooks/use-toast'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -18,8 +16,6 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { useForm } from 'react-hook-form'
-import ViewerOptions from '@/components/dashboard/ViewerOptions'
-import ImageViewer from '@/components/dashboard/ImageViewer'
 
 const DiseaseSchema = z.object({
   id: z.string(),
@@ -51,14 +47,13 @@ const DashboardPage = () => {
       color: 'violet',
     },
     // Add more diseases as needed
-  ] ;
+  ]
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       items: [],
     },
   })
-
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     toast({
@@ -72,11 +67,11 @@ const DashboardPage = () => {
   }
 
   return (
-    <section className="flex h-full w-full flex-col bg-gray-50 lg:flex-row lg:overflow-hidden">
-       <ImageViewer />
+    <section className="flex h-[calc(100vh - 48px)] w-full flex-col bg-muted lg:flex-row lg:overflow-hidden">
+      <ImageViewer />
 
       {/* Right Panel - Options */}
-      <div className="order-2 flex w-64 flex-col items-start justify-start gap-4 border-l border-primary bg-background p-4 lg:order-3 lg:overflow-y-auto">
+      <div className="hidden order-2 lg:flex w-64 flex-col items-start justify-start gap-4 border-l border-secondary bg-gradient-to-l from-neutral-800 to-stone-800 text-foreground p-4 lg:order-3 lg:h-[calc(100vh-64px)]">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
@@ -85,9 +80,9 @@ const DashboardPage = () => {
               render={() => (
                 <FormItem>
                   <div className="mb-4">
-                    <FormLabel className="text-base">AI Viewer</FormLabel>
+                    <FormLabel className="text-md font-sora">AI Viewer</FormLabel>
                     <FormDescription>
-                    Select from the following dental diseases to view their descriptions:
+                      Select to highlight the diseases in the image
                     </FormDescription>
                   </div>
                   {diseases.map((item) => (
@@ -115,7 +110,7 @@ const DashboardPage = () => {
                                 }}
                               />
                             </FormControl>
-                            <FormLabel className="text-sm font-normal">
+                            <FormLabel className="text-sm font-normal capitalize">
                               {item.label}
                             </FormLabel>
                           </FormItem>

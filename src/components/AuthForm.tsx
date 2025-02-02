@@ -52,7 +52,7 @@ const AuthForm = ({ formType }: { formType: 'signin' | 'signup' }) => {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen">
-      <Card className="overflow-hidden z-10">
+      <Card className="overflow-hidden z-10 border-border border-2">
         <CardContent className="grid p-0 md:grid-cols-1">
           <form onSubmit={handleSubmit} className="p-6 md:p-8">
             <div className="flex flex-col gap-6">
@@ -60,9 +60,9 @@ const AuthForm = ({ formType }: { formType: 'signin' | 'signup' }) => {
                 <h1 className="text-2xl font-bold font-sora">
                   Welcome {formType === 'signin' && 'back'}
                 </h1>
-                <p className="text-balance text-neutral-500 dark:text-neutral-400 font-noto-sans">
+                <p className="text-balance text-neutral-400 dark:text-neutral-400 font-noto-sans">
                   {formType === 'signup' ? 'Sign up' : 'Sign in'} to your
-                  <span className="text-secondary dark:text-secondary-hover font-sora mx-1">
+                  <span className="text-primary dark:text-secondary-hover font-sora mx-1">
                     EnamelX 
                     </span>
                     account
@@ -128,19 +128,19 @@ const AuthForm = ({ formType }: { formType: 'signin' | 'signup' }) => {
               </div>
               <Button
                 type="submit"
-                className="w-full bg-secondary hover:bg-secondary-hover text-white transition-all duration-200 ease-in-out "
+                className="w-full bg-secondary hover:bg-muted text-white transition-all duration-200 ease-in-out "
               >
                 {formType === 'signin' ? 'Sign in' : 'Sign up'}
               </Button>
-              <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-neutral-200 dark:after:border-neutral-800">
-                <span className="relative z-10 bg-white px-2 text-neutral-500 dark:bg-neutral-950 dark:text-neutral-400">
+              <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-neutral-800 dark:after:border-neutral-800">
+                <span className="relative z-10 px-2 text-primary bg-background dark:text-neutral-400">
                   OR continue with
                 </span>
               </div>
               <div className="grid grid-cols-1 gap-4">
                 <Button
                   variant="outline"
-                  className="w-full hover:bg-secondary-hover hover:text-white transition-all duration-300 ease-in-out "
+                  className="w-full hover:bg-secondary hover:text-white transition-all duration-300 ease-in-out "
                   // onClick={() => signIn('google')}
                 >
                   <svg
@@ -190,7 +190,7 @@ const AuthForm = ({ formType }: { formType: 'signin' | 'signup' }) => {
                 Don&apos;t have an account?{' '}
                 <Link
                   href={`/${formType === 'signup' ? 'signin' : 'signup'}`}
-                  className="underline-offset-4 hover:underline text-secondary dark:text-secondary-hover font-semibold"
+                  className="underline-offset-4 hover:underline text-secondary-foreground  font-semibold"
                 >
                   {formType === 'signup' ? 'Sign in' : 'Sign up'}
                 </Link>
@@ -198,7 +198,7 @@ const AuthForm = ({ formType }: { formType: 'signin' | 'signup' }) => {
             </div>
           </form>
         </CardContent>
-        <CardFooter className="text-balance text-center text-xs text-neutral-500 [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-neutral-900 dark:text-neutral-400 dark:hover:[&_a]:text-neutral-50 z-10 space-x-1">
+        <CardFooter className="text-balance text-center text-xs text-neutral-500 [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary dark:text-neutral-400 dark:hover:[&_a]:text-neutral-50 z-10 space-x-1">
           <p>By clicking continue, you agree to our</p>
           <Link href="#">Terms of Service</Link>
           <span>&amp;</span>

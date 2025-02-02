@@ -1,13 +1,16 @@
 import Link from 'next/link'
 import React from 'react'
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
-const Header:React.FC = () => {
+const Header: React.FC = () => {
   return (
-    <header className="w-full h-12 flex justify-between items-center py-4 px-8 bg-background text-foreground border-b border-primary">
-      <div className="text-2xl font-bold font-sora">Logo</div>
-      <nav className="flex gap-4 text-lg font-normal">
-        
-      </nav>
+    <header className="flex h-16 w-full items-center justify-between border-b border-border bg-primary-foreground px-8 py-4 text-foreground">
+      <div className="font-sora text-2xl font-bold">Logo</div>
+      <nav className="flex gap-4 text-lg font-normal"></nav>
+      <Avatar>
+        <AvatarImage src="https://github.com/shadcn.png" />
+        <AvatarFallback>CN</AvatarFallback>
+      </Avatar>
     </header>
   )
 }
