@@ -32,21 +32,12 @@ const DiseasesSchema = z.array(DiseaseSchema)
 
 const DashboardPage = () => {
   const diseases = [
-    { id: 'caries', label: 'caries', count: 0, color: 'purple' },
-    {
-      id: 'periapical_radiolucency',
-      label: 'periapical radiolucency',
-      count: 0,
-      color: 'blue',
-    },
-    { id: 'calculus', label: 'calculus', count: 0, color: 'green' },
-    {
-      id: 'notable_margin',
-      label: 'notable margin',
-      count: 0,
-      color: 'violet',
-    },
-    // Add more diseases as needed
+    { id: 'root_piece', label: 'Root Piece', count: 6, color: 'purple' },
+    { id: 'crown', label: 'Crown', count: 5, color: 'blue' },
+    { id: 'root_canal_treatment', label: 'Root Canal Treatment', count: 10, color: 'green' },
+    { id: 'periapical_lesion', label: 'Periapical lesion', count: 4, color: 'violet' },
+    { id: 'caries', label: 'Caries', count: 1, color: 'red' },
+    { id: 'filling', label: 'Filling', count: 2, color: 'orange' },
   ]
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -111,6 +102,9 @@ const DashboardPage = () => {
                             </FormControl>
                             <FormLabel className="text-sm font-normal capitalize">
                               {item.label}
+                            </FormLabel>
+                            <FormLabel className="text-sm font-normal capitalize">
+                              {item.count}
                             </FormLabel>
                           </FormItem>
                         )

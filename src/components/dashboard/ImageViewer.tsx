@@ -6,7 +6,6 @@ import { rotate, setFullScreen, zoomIn, zoomOut } from './canvasUtils'
 import { handleFileChange, handleFileUpload } from './fileUtils'
 import { setupMouseEvents } from './mouseEvents'
 import ViewerOptions from './ViewerOptions'
-import { set } from 'react-hook-form'
 
 const ImageViewer = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -24,6 +23,13 @@ const ImageViewer = () => {
       width: w < 600 ? w - w * 0.15 : w < 900 ? w - w * 0.25 : 900,
       height: w < 600 ? w - w * 0.15 : w < 900 ? w - w * 0.25 : 560,
       selection: false, // Disable initial selection
+      controlsAboveOverlay: true,
+      cornerColor: '#0c8ce9',
+      cornerStrokeColor: '#fcfcfc',
+      transparentCorners: false,
+      cornerStyle: 'circle',
+      cornerStroke: 10,
+      cornerSize: 12,
     })
     setCanvas(newCanvas)
     setupMouseEvents(newCanvas)
