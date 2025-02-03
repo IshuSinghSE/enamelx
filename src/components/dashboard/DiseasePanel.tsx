@@ -2,6 +2,8 @@
 import { useState } from 'react'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import InfoChart from './InfoChart'
 
 export type Disease = {
   id: string
@@ -13,9 +15,17 @@ export type Disease = {
 const DiseasePanel = ({
   diseases,
   setSelectedDiseases,
+  isLoading,
+  hasImage,
+  chartData,
+  chartConfig,
 }: {
   diseases: Disease[]
   setSelectedDiseases: (diseases: Disease[]) => void
+  isLoading: boolean
+  hasImage: boolean
+  chartData: any[]
+  chartConfig: any
 }) => {
   const [selectedDiseases, setSelectedDiseasesState] = useState<string[]>([])
 
@@ -35,7 +45,7 @@ const DiseasePanel = ({
     <div className="order-3 w-full flex-col items-start justify-start gap-4 border-l border-secondary bg-gradient-to-l from-neutral-800 to-stone-800 p-4 px-10 text-foreground md:w-64 md:px-4 lg:order-3 lg:flex lg:h-[calc(100vh-64px)]">
       <div className="mb-4">
         <h2 className="text-md font-sora">AI Viewer</h2>
-        <p>Select to highlight the diseases in the image</p>
+        <p className="text-xs font-noto-sans text-destructive-foreground">Select to highlight the diseases in the image</p>
       </div>
       {diseases.map((disease) => (
         <div
@@ -46,18 +56,22 @@ const DiseasePanel = ({
             <Checkbox
               checked={selectedDiseases.includes(disease.id)}
               onCheckedChange={() => handleCheckboxChange(disease.id)}
+              disabled={isLoading || hasImage || disease.count === 0}
             />
-            <label className="text-sm font-normal font-noto-sans capitalize">
+            <label className={cn("text-sm font-normal font-noto-sans capitalize", isLoading || hasImage || disease.count === 0 ? 'text-gray-400' : 'text-neutral-100')}>
               {disease.label.split(' ').slice(0, 2).join(' ')}
             </label>
           </div>
-          <div className='flex items-center justify-center w-6 p-2 h-6 rounded-full' style={{ backgroundColor: `${disease.color}` }}>
+          <div className='flex items-center justify-center w-6 p-2 h-6 rounded-full' style={{ backgroundColor: `${disease.color}`, opacity: isLoading || hasImage || disease.count === 0 ? 0.5 : 1 }}>
             <span className="text-sm font-semibold capitalize">
               {disease.count}
             </span>
           </div>
         </div>
       ))}
+      <div>
+        <InfoChart chartData={chartData} chartConfig={chartConfig} />
+      </div>
     </div>
   )
 }

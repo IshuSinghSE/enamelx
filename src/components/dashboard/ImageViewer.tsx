@@ -7,7 +7,6 @@ import { handleFileChange, handleFileUpload } from './fileUtils'
 import { setupMouseEvents } from './mouseEvents'
 import ViewerOptions from './ViewerOptions'
 
-const API_URL = 'http://127.0.0.1:5000'
 type Disease = {
   id: string
   label: string
@@ -25,7 +24,7 @@ type BackendResponse = {
   [key: string]: Prediction[]
 }
 
-const ImageViewer = ({ selectedDiseases }: { selectedDiseases: Disease[] }) => {
+const ImageViewer = ({ selectedDiseases, setHasImage, predictions }: { selectedDiseases: Disease[], setHasImage: (hasImage: boolean) => void, predictions: BackendResponse }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const fileRef = useRef<HTMLInputElement>(null)
   const [canvas, setCanvas] = useState<Canvas>()
@@ -33,18 +32,6 @@ const ImageViewer = ({ selectedDiseases }: { selectedDiseases: Disease[] }) => {
   const [canvasImage, setCanvasImage] = useState<FabricImage | null>(null)
   const [canvasObjects, setCanvasObjects] = useState<FabricObject[]>([])
   const [isDrawing, setIsDrawing] = useState(false)
-  const [predictions, setPredictions] = useState<BackendResponse>({})
-
-  useEffect(() => {
-    const fetchPredictions = async () => {
-      // Fetch predictions from the backend
-      await fetch(`${API_URL}`)
-        .then((response) => response.json())
-        .then((data) => setPredictions(data))
-        .catch((error) => console.error('Error fetching predictions:', error))
-    }
-    fetchPredictions()
-  }, [])
 
   useEffect(() => {
     if (!canvasRef.current) return
@@ -148,8 +135,8 @@ const ImageViewer = ({ selectedDiseases }: { selectedDiseases: Disease[] }) => {
         diseasePredictions.forEach((prediction) => {
           const [left, top, right, bottom] = prediction.bbox
           const rect = new Rect({
-            left: canvasImage.left+ left,
-            top: canvasImage.top+top,
+            left: canvasImage.left + left,
+            top: canvasImage.top + top,
             width: right - left,
             height: bottom - top,
             fill: `${disease.color}22`,
@@ -185,7 +172,14 @@ const ImageViewer = ({ selectedDiseases }: { selectedDiseases: Disease[] }) => {
         fileRef={fileRef as React.RefObject<HTMLInputElement>}
         canvasImage={canvasImage}
         setImageSrc={setImageSrc}
-        setCanvasImage={setCanvasImage}
+        setCanvasImage={(image) => {
+          setCanvasImage(image)
+          if (image) {
+            setHasImage(true)
+          } else {
+            setHasImage(false)
+          }
+        }}
         canvasObjects={canvasObjects}
       />
 
