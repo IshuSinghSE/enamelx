@@ -28,12 +28,19 @@ export const handleFileChange = (
         )
 
         const fabricImage = new FabricImage(imageElement, {
-          scaleX: scale,
-          scaleY: scale,
-          originX: 'center',
-          originY: 'center',
-          left: canvasWidth / 2,
-          top: canvasHeight / 2,
+          // TODO: set the image and box to the center of the canvas
+          // scaleX: scale,
+          // scaleY: scale,
+          // originX: 'center',
+          // originY: 'center',
+          // left: canvasWidth / 2,
+          // top: canvasHeight / 2,
+          // scaleX: 1,
+          // scaleY: 1,
+          left:0,
+          top: 0,
+          width: canvasWidth,
+          height: canvasHeight,
           cornerColor: '#0c8ce9',
           cornerStrokeColor: '#fcfcfc',
           transparentCorners: false,
@@ -44,11 +51,13 @@ export const handleFileChange = (
         })
 
         canvas.clear() // Clear the canvas before adding the new image
-        setCanvasImage(fabricImage)
         canvas.add(fabricImage)
+        // canvas.centerObject(fabricImage)
+        // fabricImage.setCoords()
+        setCanvasImage(fabricImage)
         canvas.setActiveObject(fabricImage)
-        canvas.centerObject(fabricImage)
         canvas.renderAll() // Ensure the canvas is rendered after adding the image
+        console.log(fabricImage.left, fabricImage.top)
       }
     }
 

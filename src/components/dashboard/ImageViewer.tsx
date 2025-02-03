@@ -1,5 +1,5 @@
 'use client' // For Next.js app router
-import { Canvas, FabricImage, FabricObject } from 'fabric'
+import { Canvas, FabricImage, FabricObject, Group, Rect } from 'fabric'
 import { useEffect, useRef, useState } from 'react'
 import { Button } from '../ui/button'
 import { rotate, setFullScreen, zoomIn, zoomOut } from './canvasUtils'
@@ -7,7 +7,25 @@ import { handleFileChange, handleFileUpload } from './fileUtils'
 import { setupMouseEvents } from './mouseEvents'
 import ViewerOptions from './ViewerOptions'
 
-const ImageViewer = () => {
+const API_URL = 'http://127.0.0.1:5000'
+type Disease = {
+  id: string
+  label: string
+  count: number
+  color: string
+}
+
+type Prediction = {
+  bbox: [number, number, number, number]
+  class_id: number
+  confidence: number
+}
+
+type BackendResponse = {
+  [key: string]: Prediction[]
+}
+
+const ImageViewer = ({ selectedDiseases }: { selectedDiseases: Disease[] }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const fileRef = useRef<HTMLInputElement>(null)
   const [canvas, setCanvas] = useState<Canvas>()
@@ -15,6 +33,18 @@ const ImageViewer = () => {
   const [canvasImage, setCanvasImage] = useState<FabricImage | null>(null)
   const [canvasObjects, setCanvasObjects] = useState<FabricObject[]>([])
   const [isDrawing, setIsDrawing] = useState(false)
+  const [predictions, setPredictions] = useState<BackendResponse>({})
+
+  useEffect(() => {
+    const fetchPredictions = async () => {
+      // Fetch predictions from the backend
+      await fetch(`${API_URL}`)
+        .then((response) => response.json())
+        .then((data) => setPredictions(data))
+        .catch((error) => console.error('Error fetching predictions:', error))
+    }
+    fetchPredictions()
+  }, [])
 
   useEffect(() => {
     if (!canvasRef.current) return
@@ -104,6 +134,49 @@ const ImageViewer = () => {
     }
   }, [canvas, canvasImage])
 
+  useEffect(() => {
+    if (!canvas || !canvasImage) return
+    console.log(canvasImage.left, canvasImage.top)
+
+    canvas.getObjects('group').forEach((obj) => canvas.remove(obj))
+
+    const rects: FabricObject[] = []
+
+    selectedDiseases.forEach((disease) => {
+      const diseasePredictions = predictions[disease.label]
+      if (diseasePredictions) {
+        diseasePredictions.forEach((prediction) => {
+          const [left, top, right, bottom] = prediction.bbox
+          const rect = new Rect({
+            left: canvasImage.left+ left,
+            top: canvasImage.top+top,
+            width: right - left,
+            height: bottom - top,
+            fill: `${disease.color}22`,
+            stroke: disease.color,
+            selectable: false,
+            cornerColor: '#0c8ce9',
+            cornerStrokeColor: '#fcfcfc',
+            transparentCorners: false,
+            cornerStyle: 'circle',
+            cornerStroke: 10,
+            cornerSize: 12,
+          })
+          rects.push(rect)
+        })
+      }
+    })
+
+    const group = new Group([canvasImage, ...rects], {
+      selectable: true,
+      evented: true,
+    })
+
+    canvas.add(group)
+    canvas.setActiveObject(group)
+    canvas.renderAll()
+  }, [canvas, selectedDiseases, predictions, canvasImage])
+
   return (
     <>
       {/* Left Panel - Actions */}
@@ -132,7 +205,7 @@ const ImageViewer = () => {
               className="pointer-events-none absolute inset-0 flex items-center justify-center bg-transparent"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="text-center text-gray-500">
+              <div className="text-center text-gray-500 transition-all duration-300 ease-in-out">
                 <input
                   type="file"
                   id="fileImage"
@@ -145,7 +218,7 @@ const ImageViewer = () => {
                   style={{ display: 'none' }}
                 />
                 <Button
-                  className="pointer-events-auto capitalize"
+                  className="pointer-events-auto capitalize transition-all duration-300 ease-in-out"
                   onClick={() =>
                     fileRef.current &&
                     handleFileUpload(
