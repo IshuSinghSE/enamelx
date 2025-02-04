@@ -1,4 +1,4 @@
-import { Canvas, FabricImage } from 'fabric'
+import { Canvas, FabricImage, Group } from 'fabric'
 import { Dispatch, SetStateAction } from 'react'
 
 export const handleFileChange = (
@@ -6,7 +6,8 @@ export const handleFileChange = (
   canvas: Canvas,
   setImageSrc: React.Dispatch<React.SetStateAction<string | null>>,
   setCanvasImage: React.Dispatch<React.SetStateAction<FabricImage | null>>,
-  setHasImage: Dispatch<SetStateAction<boolean>> // Add this prop
+  setHasImage: Dispatch<SetStateAction<boolean>>,
+  setGroup: React.Dispatch<React.SetStateAction<Group | null>> // Add this prop
 ) => {
   const fileInput = e.target
   const file = fileInput?.files?.[0]
@@ -30,10 +31,12 @@ export const handleFileChange = (
         )
 
         const fabricImage = new FabricImage(imageElement, {
-          left: 0,
-          top: 0,
-          width: canvasWidth,
-          height: canvasHeight,
+          scaleX: scale,
+          scaleY: scale,
+          originX: 'center',
+          originY: 'center',
+          width: imageWidth,
+          height: imageHeight, // Corrected height
           cornerColor: '#0c8ce9',
           cornerStrokeColor: '#fcfcfc',
           transparentCorners: false,
@@ -43,13 +46,25 @@ export const handleFileChange = (
           hoverCursor: 'default',
         })
 
+        const newGroup = new Group([fabricImage], {
+          selectable: true,
+          evented: true,
+        })
+
         canvas.clear() // Clear the canvas before adding the new image
-        canvas.add(fabricImage)
+        canvas.add(newGroup)
         setCanvasImage(fabricImage)
-        canvas.setActiveObject(fabricImage)
+        setImageSrc(imageElement.src)
+        setGroup(newGroup) // Set the group
+        // TODO: canvas.CenterObject(newGroup) is not working, i will fix it with the disease panel
+        canvas.centerObject(newGroup)
+        canvas.setActiveObject(newGroup)
         canvas.renderAll() // Ensure the canvas is rendered after adding the image
         setHasImage(true) // Set hasImage to true
+        fabricImage.setCoords()
+        fabricImage.calcACoords()
         console.log(fabricImage.left, fabricImage.top)
+        canvas.renderAll()
       }
     }
 
@@ -89,8 +104,9 @@ export const handleFileRemove = (
   canvasImage: FabricImage | null,
   setImageSrc: React.Dispatch<React.SetStateAction<string | null>>,
   setCanvasImage: React.Dispatch<React.SetStateAction<FabricImage | null>>,
-  resetSelectedDiseases: () => void, // Add this prop
-  setHasImage: React.Dispatch<React.SetStateAction<boolean>> // Add this prop
+  resetSelectedDiseases: () => void,
+  setHasImage: React.Dispatch<React.SetStateAction<boolean>>,
+  setGroup: React.Dispatch<React.SetStateAction<Group | null>> // Add this prop
 ) => {
   const activeObject = canvas.getActiveObject()
   if (activeObject) {
@@ -101,6 +117,7 @@ export const handleFileRemove = (
     setCanvasImage(null)
     resetSelectedDiseases() // Reset selected diseases
     setHasImage(false) // Set hasImage to false
+    setGroup(null) // Reset the group
   }
   canvas.setZoom(1)
   canvas.setDimensions({ width: canvas.getWidth(), height: canvas.getHeight() })
@@ -111,8 +128,9 @@ export const handleRemoveAll = (
   canvas: Canvas,
   setImageSrc: React.Dispatch<React.SetStateAction<string | null>>,
   setCanvasImage: React.Dispatch<React.SetStateAction<FabricImage | null>>,
-  resetSelectedDiseases: () => void, // Add this prop
-  setHasImage: React.Dispatch<React.SetStateAction<boolean>> // Add this prop
+  resetSelectedDiseases: () => void,
+  setHasImage: React.Dispatch<React.SetStateAction<boolean>>,
+  setGroup: React.Dispatch<React.SetStateAction<Group | null>> // Add this prop
 ) => {
   canvas.clear()
   setImageSrc(null)
@@ -122,4 +140,5 @@ export const handleRemoveAll = (
   canvas.renderAll()
   resetSelectedDiseases() // Reset selected diseases
   setHasImage(false) // Set hasImage to false
+  setGroup(null) // Reset the group
 }

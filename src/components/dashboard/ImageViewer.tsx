@@ -2,7 +2,7 @@
 import { Canvas, FabricImage, FabricObject, Group, Rect } from 'fabric'
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 import { Button } from '../ui/button'
-import { rotate, setFullScreen, zoomIn, zoomOut } from './canvasUtils'
+import { rotate, setFullScreen, zoomIn, zoomOut, flipHorizontal, flipVertical } from './canvasUtils'
 import { handleFileChange, handleFileUpload, handleFileRemove, handleRemoveAll } from './fileUtils'
 import { setupMouseEvents } from './mouseEvents'
 import ViewerOptions from './ViewerOptions'
@@ -50,6 +50,7 @@ const ImageViewer = ({
   const [canvasImage, setCanvasImage] = useState<FabricImage | null>(null)
   const [canvasObjects, setCanvasObjects] = useState<FabricObject[]>([])
   const [isDrawing, setIsDrawing] = useState(false)
+  const [group, setGroup] = useState<Group | null>(null)
 
   useEffect(() => {
     if (!canvasRef.current) return
@@ -100,20 +101,20 @@ const ImageViewer = ({
       const width = w < 600 ? w - w * 0.15 : w < 900 ? w - w * 0.25 : 900
       const height = w < 600 ? w - w * 0.15 : w < 900 ? w - w * 0.25 : 560
       canvas.setDimensions({ width, height })
-      if (canvasImage) {
-        setFullScreen(canvas, canvasImage)
+      if (group) {
+        setFullScreen(canvas, group)
       }
       canvas.renderAll()
     }
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === '=' || e.key === '+') {
-        zoomIn(canvas, canvasImage)
+        zoomIn(canvas, group)
       }
       if (e.key === '-') {
-        zoomOut(canvas, canvasImage)
+        zoomOut(canvas, group)
       }
-      if (e.key === 'r') rotate(canvas)
+      if (e.key === 'r') rotate(canvas, group)
       if (e.key === 'Delete') {
         const activeObject = canvas.getActiveObject()
         if (activeObject) {
@@ -125,7 +126,7 @@ const ImageViewer = ({
         canvas.discardActiveObject()
         canvas.renderAll()
       }
-      if (e.key === 'f' && canvasImage) setFullScreen(canvas, canvasImage)
+      if (e.key === 'f' && group) setFullScreen(canvas, group)
     }
 
     window.addEventListener('keydown', handleKeyDown)
@@ -137,7 +138,7 @@ const ImageViewer = ({
       window.removeEventListener('keydown', handleKeyDown)
       window.removeEventListener('resize', updateCanvasSize)
     }
-  }, [canvas, canvasImage])
+  }, [canvas, group])
 
   useEffect(() => {
     if (!canvas || !canvasImage) return
@@ -160,25 +161,29 @@ const ImageViewer = ({
             fill: `${disease.color}22`,
             stroke: disease.color,
             selectable: false,
-            cornerColor: '#0c8ce9',
-            cornerStrokeColor: '#fcfcfc',
-            transparentCorners: false,
-            cornerStyle: 'circle',
-            cornerStroke: 10,
-            cornerSize: 12,
+            
           })
           rects.push(rect)
         })
       }
     })
 
-    const group = new Group([canvasImage, ...rects], {
+    const newGroup = new Group([canvasImage, ...rects], {
       selectable: true,
       evented: true,
+      cornerColor: '#0c8ce9',
+          cornerStrokeColor: '#fcfcfc',
+          transparentCorners: false,
+          cornerStyle: 'circle',
+          cornerSize: 12,
+          hoverCursor: 'default',
     })
 
-    canvas.add(group)
-    canvas.setActiveObject(group)
+    canvas.add(newGroup)
+    canvas.setActiveObject(newGroup)
+    canvas.centerObject(newGroup)
+    
+    setGroup(newGroup)
     canvas.renderAll()
   }, [canvas, selectedDiseases, predictions, canvasImage])
 
@@ -203,7 +208,8 @@ const ImageViewer = ({
         setSelectedDiseases={setSelectedDiseases} // Add appropriate function here
         resetDiseasesToInitial={resetDiseasesToInitial} // Add appropriate function here
         resetSelectedDiseases={resetSelectedDiseases} // Add appropriate function here
-
+        canvasGroup={group} // Pass the group here
+        setGroup={setGroup} // Pass the setGroup function here
       />
 
       {/* Add more action buttons as needed */}
@@ -235,7 +241,7 @@ const ImageViewer = ({
                       if (file) {
                         fetchPredictions(file)
                       }
-                      handleFileChange(e, canvas, setImageSrc, setCanvasImage, setHasImage)
+                      handleFileChange(e, canvas, setImageSrc, setCanvasImage, setHasImage, setGroup)
                     }
                   }}
                   style={{ display: 'none' }}

@@ -1,5 +1,5 @@
 'use client' // For Next.js app router
-import { Canvas, FabricImage, FabricObject } from 'fabric'
+import { Canvas, FabricImage, FabricObject, Group } from 'fabric'
 import {
   CircleDot,
   Circle as CircleIcon,
@@ -40,6 +40,8 @@ interface ViewerOptionsProps {
   canvas: Canvas | undefined
   fileRef: React.RefObject<HTMLInputElement>
   canvasImage: FabricImage | null
+  canvasGroup: FabricObject | Group | null
+  setGroup: React.Dispatch<React.SetStateAction<Group | null>>
   setImageSrc: React.Dispatch<React.SetStateAction<string | null>>
   setCanvasImage: React.Dispatch<React.SetStateAction<FabricImage | null>>
     setHasImage:React.Dispatch<React.SetStateAction<boolean>> 
@@ -53,6 +55,8 @@ const ViewerOptions: React.FC<ViewerOptionsProps> = ({
   canvas,
   fileRef,
   canvasImage,
+  canvasGroup,
+  setGroup,
   setImageSrc,
   setCanvasImage,
   setHasImage,
@@ -83,7 +87,7 @@ const ViewerOptions: React.FC<ViewerOptionsProps> = ({
 
   const handleRemoveAllAndResetDiseases = () => {
     if (canvas) {
-      handleRemoveAll(canvas, setImageSrc, setCanvasImage, resetSelectedDiseases, setHasImage)
+      handleRemoveAll(canvas, setImageSrc, setCanvasImage, resetSelectedDiseases, setHasImage, setGroup)
       setSelectedDiseases([])
       resetDiseasesToInitial() // Reset diseases to initial state
       resetSelectedDiseases() // Reset selected diseases
@@ -92,7 +96,7 @@ const ViewerOptions: React.FC<ViewerOptionsProps> = ({
 
   const handleFileRemoveAndResetDiseases = () => {
     if (canvas) {
-      handleFileRemove(canvas, canvasImage, setImageSrc, setCanvasImage, resetSelectedDiseases, setHasImage)
+      handleFileRemove(canvas, canvasImage, setImageSrc, setCanvasImage, resetSelectedDiseases, setHasImage, setGroup)
       setSelectedDiseases([])
       resetDiseasesToInitial() // Reset diseases to initial state
       resetSelectedDiseases() // Reset selected diseases
@@ -116,7 +120,7 @@ const ViewerOptions: React.FC<ViewerOptionsProps> = ({
           accept="image/*"
           ref={fileRef}
           onChange={(e) =>
-            canvas && handleFileChange(e, canvas, setImageSrc, setCanvasImage, setHasImage)
+            canvas && handleFileChange(e, canvas, setImageSrc, setCanvasImage, setHasImage, setGroup)
           }
           style={{ display: 'none' }}
         />
@@ -180,47 +184,32 @@ const ViewerOptions: React.FC<ViewerOptionsProps> = ({
           <ActionButton
             label="Zoom In"
             icon={<ZoomIn />}
-            onClick={() => canvas && canvasImage && zoomIn(canvas, canvasImage)}
+            onClick={() => canvas && canvasGroup instanceof Group && zoomIn(canvas, canvasGroup)}
           />
           <ActionButton
             label="Zoom Out"
             icon={<ZoomOut />}
-            onClick={() =>
-              canvas && canvasImage && zoomOut(canvas, canvasImage)
-            }
+            onClick={() => canvas && canvasGroup instanceof Group && zoomOut(canvas, canvasGroup)}
           />
           <ActionButton
             label="Flip X"
             icon={<FlipHorizontalIcon />}
-            onClick={() =>
-              canvas && canvasImage && flipHorizontal(canvas, canvasImage)
-            }
+            onClick={() => canvas && canvasGroup instanceof Group && flipHorizontal(canvas, canvasGroup)}
           />
           <ActionButton
             label="Flip Y"
             icon={<FlipVerticalIcon />}
-            onClick={() =>
-              canvas && canvasImage && flipVertical(canvas, canvasImage)
-            }
+            onClick={() => canvas && canvasGroup instanceof Group && flipVertical(canvas, canvasGroup)}
           />
           <ActionButton
             label="Fit"
             icon={<Fullscreen />}
-            onClick={() =>
-              canvas &&
-              canvasImage &&
-              setFullScreen(
-                canvas,
-                (canvas.getActiveObject() || canvasImage) as FabricImage
-              )
-            }
+            onClick={() => canvas && canvasGroup instanceof Group && setFullScreen(canvas, canvasGroup)}
           />
           <ActionButton
             label="Rotate"
             icon={<RotateCw />}
-            onClick={() =>
-              canvas && canvasImage && rotate(canvas, canvasImage)
-            }
+            onClick={() => canvas && canvasGroup instanceof Group && rotate(canvas, canvasGroup)}
           />
         </div>
       </div>
@@ -229,3 +218,4 @@ const ViewerOptions: React.FC<ViewerOptionsProps> = ({
 }
 
 export default ViewerOptions
+
