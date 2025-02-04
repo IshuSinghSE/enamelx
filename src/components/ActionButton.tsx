@@ -30,4 +30,6 @@ const ActionButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
   }
 )
 
+ActionButton.displayName = 'ActionButton'
+
 export default ActionButton
