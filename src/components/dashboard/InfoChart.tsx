@@ -1,4 +1,3 @@
-import React from 'react'
 import {
   Sheet,
   SheetContent,
@@ -6,13 +5,14 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '@/components/ui/sheet'
-import { Button } from '../ui/button'
-import { InfoPieChart } from './InfoPieChart'
+} from '@/components/ui/sheet';
+import React from 'react';
+import { InfoPieChart } from './InfoPieChart';
+import type { ChartConfig, ChartData } from './DiseasePanel';
 
 interface ChartProps {
-  chartData: any; // Replace 'any' with the appropriate type
-  chartConfig: any; // Replace 'any' with the appropriate type
+  chartData: ChartData[]; // Replace 'any' with the appropriate type
+  chartConfig: ChartConfig; // Replace 'any' with the appropriate type
 }
 
 const InfoChart: React.FC<ChartProps> = ({ chartData, chartConfig }) => {

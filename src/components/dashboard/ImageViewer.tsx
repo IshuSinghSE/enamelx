@@ -1,9 +1,9 @@
 'use client' // For Next.js app router
 import { Canvas, FabricImage, FabricObject, Group, Rect } from 'fabric'
-import { useEffect, useRef, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 import { Button } from '../ui/button'
 import { rotate, setFullScreen, zoomIn, zoomOut } from './canvasUtils'
-import { handleFileChange, handleFileUpload } from './fileUtils'
+import { handleFileChange, handleFileUpload, handleFileRemove, handleRemoveAll } from './fileUtils'
 import { setupMouseEvents } from './mouseEvents'
 import ViewerOptions from './ViewerOptions'
 
@@ -24,7 +24,25 @@ type BackendResponse = {
   [key: string]: Prediction[]
 }
 
-const ImageViewer = ({ selectedDiseases, setHasImage, predictions }: { selectedDiseases: Disease[], setHasImage: (hasImage: boolean) => void, predictions: BackendResponse }) => {
+const ImageViewer = ({
+  selectedDiseases,
+  setHasImage,
+  predictions,
+  fetchPredictions,
+  isLoading,
+  setSelectedDiseases,
+  resetDiseasesToInitial, // Add this prop
+  resetSelectedDiseases, // Add this prop
+}: {
+  selectedDiseases: Disease[]
+  setHasImage: Dispatch<SetStateAction<boolean>>
+  predictions: BackendResponse
+  isLoading: boolean
+  fetchPredictions: (image: File) => void
+    setSelectedDiseases: Dispatch<SetStateAction<Disease[]>>
+    resetDiseasesToInitial: () => void
+    resetSelectedDiseases: () => void
+}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const fileRef = useRef<HTMLInputElement>(null)
   const [canvas, setCanvas] = useState<Canvas>()
@@ -130,7 +148,7 @@ const ImageViewer = ({ selectedDiseases, setHasImage, predictions }: { selectedD
     const rects: FabricObject[] = []
 
     selectedDiseases.forEach((disease) => {
-      const diseasePredictions = predictions[disease.label]
+      const diseasePredictions = predictions[disease.id]
       if (diseasePredictions) {
         diseasePredictions.forEach((prediction) => {
           const [left, top, right, bottom] = prediction.bbox
@@ -180,7 +198,12 @@ const ImageViewer = ({ selectedDiseases, setHasImage, predictions }: { selectedD
             setHasImage(false)
           }
         }}
+        setHasImage={setHasImage}
         canvasObjects={canvasObjects}
+        setSelectedDiseases={setSelectedDiseases} // Add appropriate function here
+        resetDiseasesToInitial={resetDiseasesToInitial} // Add appropriate function here
+        resetSelectedDiseases={resetSelectedDiseases} // Add appropriate function here
+
       />
 
       {/* Add more action buttons as needed */}
@@ -205,10 +228,16 @@ const ImageViewer = ({ selectedDiseases, setHasImage, predictions }: { selectedD
                   id="fileImage"
                   accept="image/*"
                   ref={fileRef}
-                  onChange={(e) =>
-                    canvas &&
-                    handleFileChange(e, canvas, setImageSrc, setCanvasImage)
-                  }
+                  onChange={(e) => {
+                    if (canvas) {
+                      const file = e.target.files?.[0]
+                      console.log('File changed',file)
+                      if (file) {
+                        fetchPredictions(file)
+                      }
+                      handleFileChange(e, canvas, setImageSrc, setCanvasImage, setHasImage)
+                    }
+                  }}
                   style={{ display: 'none' }}
                 />
                 <Button
@@ -222,6 +251,13 @@ const ImageViewer = ({ selectedDiseases, setHasImage, predictions }: { selectedD
                 >
                   start analysis
                 </Button>
+              </div>
+            </div>
+          )}
+          {isLoading && (
+            <div className="backdrop-blur-lg pointer-events-none absolute inset-0 flex items-center justify-center bg-transparent">
+              <div className="text-center text-gray-500 transition-all duration-300 ease-in-out">
+                <p className='text-md text-white font-bold font-sora'>Processing...</p>
               </div>
             </div>
           )}

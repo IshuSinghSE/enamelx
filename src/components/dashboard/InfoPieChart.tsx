@@ -14,19 +14,18 @@ import {
   ChartLegend,
   ChartLegendContent,
 } from "@/components/ui/chart";
+import { ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 
 interface ChartData {
   visitors: number;
-  browser: string;
+  disease: string;
 }
-
-// Remove the redefinition of ChartConfig
 
 export function InfoPieChart({ chartData, chartConfig }: { chartData: ChartData[], chartConfig: ChartConfig }) {
   return (
     <Card className="flex flex-col my-4 border border-border bg-gradient-to-r from-neutral-800 to-stone-800">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Disease Chart</CardTitle>
+        <CardTitle>Diseases</CardTitle>
         {/* <CardDescription>January - June 2024</CardDescription> */}
       </CardHeader>
       <CardContent className="flex-1 pb-0">
@@ -36,8 +35,9 @@ export function InfoPieChart({ chartData, chartConfig }: { chartData: ChartData[
         >
           <PieChart>
             <Pie data={chartData} dataKey="visitors" />
+          <ChartTooltip content={<ChartTooltipContent nameKey={'disease'} hideLabel />} />
             <ChartLegend
-              content={<ChartLegendContent nameKey="browser" />}
+              content={<ChartLegendContent nameKey="disease" />}
               className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
             />
           </PieChart>
