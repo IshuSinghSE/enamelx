@@ -1,5 +1,6 @@
-import { Canvas, FabricImage, Group } from 'fabric'
+import { Canvas, FabricImage, Group, filters } from 'fabric'
 import { Dispatch, SetStateAction } from 'react'
+import Resizer from 'react-image-file-resizer'
 
 export const handleFileChange = (
   e: React.ChangeEvent<HTMLInputElement>,
@@ -144,4 +145,111 @@ export const handleRemoveAll = (
   resetSelectedDiseases() // Reset selected diseases
   setHasImage(false) // Set hasImage to false
   setGroup(null) // Reset the group
+}
+
+export const resizeImage = (file: File, maxWidth:number, maxHeight: number, quality?:number, format?:string): Promise<File> => {
+  return new Promise((resolve, reject) => {
+    Resizer.imageFileResizer(
+      file,
+      maxWidth,
+      maxHeight,
+      format === 'JPEG' ? 'JPEG' : 'PNG',
+      quality || 1,
+      0,
+      (uri) => {
+        if (typeof uri === 'string') {
+          fetch(uri)
+            .then(res => res.blob())
+            .then(blob => {
+              resolve(new File([blob], file.name, { type: file.type }))
+            })
+            .catch(error => reject(error))
+        } else {
+          reject(new Error('Failed to resize image'))
+        }
+      },
+      'base64'
+    )
+  })
+}
+
+export const convertToGrayscale = (canvas: Canvas) => {
+  const objects = canvas.getObjects()
+  objects.forEach((obj) => {
+    if (obj.type === 'image') {
+      const img = obj as FabricImage
+      img.filters?.push(new filters.Grayscale())
+      img.applyFilters()
+    }
+  })
+  canvas.renderAll()
+}
+
+export const exportFileAsImage = (canvas: Canvas, fileName?: string) => {
+  const dataUrl = canvas.toDataURL({
+    format: 'jpeg',
+    quality: 1.0,
+    multiplier: 1,
+  })
+  const a = document.createElement('a')
+  a.style.display = 'none'
+  a.href = dataUrl
+  a.download = fileName || 'image.jpg'
+  document.body.appendChild(a)
+  a.click()
+  URL.revokeObjectURL(dataUrl)
+  document.body.removeChild(a)
+}
+
+export const printFile = (canvas: Canvas, title?: string, detail?: string) => {
+  const dataUrl = canvas.toDataURL({
+    format: 'jpeg',
+    quality: 1.0,
+    multiplier: 1,
+  })
+  const printWindow = window.open('', '_blank')
+  if (printWindow) {
+    printWindow.document.write(
+      `<h1>${title || 'Dental xray of patient 001 john roger'}</h1>`
+    )
+
+    printWindow.document.write(
+      `<p>${detail || "This dental report provides a detailed analysis of the patient's dental x-ray. The x-ray reveals the presence of cavities in the molars and signs of early-stage periodontal disease. It is recommended that the patient undergoes a thorough cleaning and follows up with a dental professional for further evaluation and treatment."}</p>`
+    )
+    printWindow.document.write(
+      `<img src="${dataUrl}" onload="window.print();window.close()" />`
+    )
+    printWindow.document.close()
+  }
+}
+
+export const shareFile = async (
+  canvas: Canvas,
+  fileName: string = 'image.png',
+  filetype?: string,
+  title?: string,
+  text?: string
+) => {
+  const dataUrl = canvas.toDataURL({
+    format: 'png',
+    quality: 1.0,
+    multiplier: 1,
+  })
+  const response = await fetch(dataUrl)
+  const blob = await response.blob()
+  const file = new File([blob], fileName, { type: filetype || 'image/png' })
+
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({
+        files: [file],
+        title: title || 'Shared Image',
+        text: text || 'Check out this image!',
+      })
+    } catch (error) {
+      console.error('Error sharing file:', error)
+    }
+  } else {
+    console.warn('Sharing not supported on this browser')
+  }
 }

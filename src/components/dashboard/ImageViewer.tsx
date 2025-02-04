@@ -2,8 +2,17 @@
 import { Canvas, FabricImage, FabricObject, Group, Rect } from 'fabric'
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 import { Button } from '../ui/button'
-import { rotate, setFullScreen, zoomIn, zoomOut, flipHorizontal, flipVertical } from './canvasUtils'
-import { handleFileChange, handleFileUpload, handleFileRemove, handleRemoveAll } from './fileUtils'
+import {
+  rotate,
+  setFullScreen,
+  zoomIn,
+  zoomOut
+} from './canvasUtils'
+import {
+  handleFileChange,
+  handleFileUpload,
+  resizeImage
+} from './fileUtils'
 import { setupMouseEvents } from './mouseEvents'
 import ViewerOptions from './ViewerOptions'
 
@@ -39,9 +48,9 @@ const ImageViewer = ({
   predictions: BackendResponse
   isLoading: boolean
   fetchPredictions: (image: File) => void
-    setSelectedDiseases: Dispatch<SetStateAction<Disease[]>>
-    resetDiseasesToInitial: () => void
-    resetSelectedDiseases: () => void
+  setSelectedDiseases: Dispatch<SetStateAction<Disease[]>>
+  resetDiseasesToInitial: () => void
+  resetSelectedDiseases: () => void
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const fileRef = useRef<HTMLInputElement>(null)
@@ -143,7 +152,10 @@ const ImageViewer = ({
   useEffect(() => {
     if (!canvas || !canvasImage) return
     const imageCoords = canvasImage.calcOCoords()
-    let [leftX, leftY] = [imageCoords.tl.corner.br.x, imageCoords.tl.corner.br.y]
+    let [leftX, leftY] = [
+      imageCoords.tl.corner.br.x,
+      imageCoords.tl.corner.br.y,
+    ]
     canvas.getObjects('group').forEach((obj) => canvas.remove(obj))
 
     const rects: FabricObject[] = []
@@ -282,12 +294,13 @@ const ImageViewer = ({
             </div>
           )}
           {isLoading && (
-            <div className="backdrop-blur-lg pointer-events-none absolute inset-0 flex items-center justify-center bg-transparent">
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-transparent backdrop-blur-lg">
               <div className="text-center text-gray-500 transition-all duration-300 ease-in-out">
-                <p className='text-md text-white font-bold font-sora'>Processing...</p>
+                <p className="text-md font-sora font-bold text-white">
+                  Processing...
+                </p>
               </div>
-              </div>
-           
+            </div>
           )}
         </div>
       </div>

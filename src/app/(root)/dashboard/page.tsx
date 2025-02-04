@@ -68,7 +68,6 @@ const DashboardPage = () => {
       })
 
       setDiseases(updatedDiseases)
-
       setPredictions(data.prediction)
       toast({ description: 'Image successfully analyzed' })
     } catch (error) {
