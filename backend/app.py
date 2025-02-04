@@ -4,10 +4,15 @@ from ultralytics import YOLO
 import numpy as np
 import cv2
 import io
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Initialize Flask app
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})  # Allow requests from React app
+CORS(app, resources={r"/*": {"origins": os.getenv("ORIGINS")}})  # Allow requests from specified origins
 
 print("💮💮💮 Loading YOLO model...")
 # Load YOLO model (Ensure "best.pt" is in the same directory)
@@ -57,6 +62,12 @@ def predict():
     return jsonify({"prediction": predictions})
 
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    if os.getenv("ENVIRONMENT") == "production":
+        # Use Gunicorn to run the app in production
+        from gunicorn.app.wsgiapp import run
+        run()
+    else:
+        # Use Flask's built-in server for local development
+        app.run(debug=True, host='0.0.0.0', port=5000)
 
 
