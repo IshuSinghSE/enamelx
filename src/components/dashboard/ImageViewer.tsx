@@ -142,8 +142,8 @@ const ImageViewer = ({
 
   useEffect(() => {
     if (!canvas || !canvasImage) return
-    console.log(canvasImage.left, canvasImage.top)
-
+    const imageCoords = canvasImage.calcOCoords()
+    let [leftX, leftY] = [imageCoords.tl.corner.br.x, imageCoords.tl.corner.br.y]
     canvas.getObjects('group').forEach((obj) => canvas.remove(obj))
 
     const rects: FabricObject[] = []
@@ -154,14 +154,15 @@ const ImageViewer = ({
         diseasePredictions.forEach((prediction) => {
           const [left, top, right, bottom] = prediction.bbox
           const rect = new Rect({
-            left: canvasImage.left + left,
-            top: canvasImage.top + top,
-            width: right - left,
-            height: bottom - top,
+            scaleX: canvasImage.scaleX,
+            scaleY: canvasImage.scaleY,
+            left: leftX + left * canvasImage.scaleX!,
+            top: leftY + top * canvasImage.scaleY!,
+            width: (right - left) * canvasImage.scaleX!,
+            height: (bottom - top) * canvasImage.scaleY!,
             fill: `${disease.color}22`,
             stroke: disease.color,
             selectable: false,
-            
           })
           rects.push(rect)
         })
@@ -172,20 +173,41 @@ const ImageViewer = ({
       selectable: true,
       evented: true,
       cornerColor: '#0c8ce9',
-          cornerStrokeColor: '#fcfcfc',
-          transparentCorners: false,
-          cornerStyle: 'circle',
-          cornerSize: 12,
-          hoverCursor: 'default',
+      cornerStrokeColor: '#fcfcfc',
+      transparentCorners: false,
+      cornerStyle: 'circle',
+      cornerSize: 12,
+      hoverCursor: 'default',
     })
 
     canvas.add(newGroup)
     canvas.setActiveObject(newGroup)
-    canvas.centerObject(newGroup)
-    
     setGroup(newGroup)
     canvas.renderAll()
   }, [canvas, selectedDiseases, predictions, canvasImage])
+
+  useEffect(() => {
+    if (!canvas || !canvasImage || !group) return
+
+    const updateGroupScale = () => {
+      const scaleX = canvasImage.scaleX
+      const scaleY = canvasImage.scaleY
+
+      group.getObjects().forEach((obj) => {
+        if (obj !== canvasImage) {
+          obj.set({
+            scaleX: scaleX,
+            scaleY: scaleY,
+          })
+        }
+      })
+
+      group.setCoords()
+      canvas.renderAll()
+    }
+
+    updateGroupScale()
+  }, [canvas, canvasImage, group])
 
   return (
     <>
@@ -237,7 +259,6 @@ const ImageViewer = ({
                   onChange={(e) => {
                     if (canvas) {
                       const file = e.target.files?.[0]
-                      console.log('File changed',file)
                       if (file) {
                         fetchPredictions(file)
                       }
@@ -265,7 +286,8 @@ const ImageViewer = ({
               <div className="text-center text-gray-500 transition-all duration-300 ease-in-out">
                 <p className='text-md text-white font-bold font-sora'>Processing...</p>
               </div>
-            </div>
+              </div>
+           
           )}
         </div>
       </div>

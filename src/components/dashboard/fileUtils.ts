@@ -49,6 +49,12 @@ export const handleFileChange = (
         const newGroup = new Group([fabricImage], {
           selectable: true,
           evented: true,
+          cornerColor: '#0c8ce9',
+          cornerStrokeColor: '#fcfcfc',
+          transparentCorners: false,
+          cornerStyle: 'circle',
+          cornerSize: 12,
+          hoverCursor: 'default',
         })
 
         canvas.clear() // Clear the canvas before adding the new image
@@ -56,14 +62,11 @@ export const handleFileChange = (
         setCanvasImage(fabricImage)
         setImageSrc(imageElement.src)
         setGroup(newGroup) // Set the group
-        // TODO: canvas.CenterObject(newGroup) is not working, i will fix it with the disease panel
         canvas.centerObject(newGroup)
         canvas.setActiveObject(newGroup)
         canvas.renderAll() // Ensure the canvas is rendered after adding the image
         setHasImage(true) // Set hasImage to true
         fabricImage.setCoords()
-        fabricImage.calcACoords()
-        console.log(fabricImage.left, fabricImage.top)
         canvas.renderAll()
       }
     }
