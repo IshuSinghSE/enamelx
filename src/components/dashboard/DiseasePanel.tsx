@@ -1,7 +1,7 @@
 'use client'
 import { Checkbox } from '@/components/ui/checkbox'
 import { cn } from '@/lib/utils'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import InfoChart from './InfoChart'
 
 export type Disease = {
@@ -56,11 +56,15 @@ const DiseasePanel = ({
     setSelectedDiseases(selected)
   }
 
-  useEffect(() => {
+  const resetSelections = useCallback(() => {
     resetSelectedDiseases()
     resetDiseasesToInitial()
     setSelectedDiseasesState([]) // Uncheck all checkboxes
-  }, []) // Include dependencies
+  }, [resetSelectedDiseases, resetDiseasesToInitial])
+
+  useEffect(() => {
+    resetSelections()
+  }, [])
 
   return (
     <div className="order-3 w-full flex-col items-start justify-start gap-4 border-l border-secondary bg-gradient-to-l from-neutral-800 to-stone-800 p-4 px-10 text-foreground md:w-64 md:px-4 lg:order-3 lg:flex lg:h-[calc(100vh-64px)]">
