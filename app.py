@@ -5,6 +5,7 @@ import numpy as np
 import cv2
 import io
 import os
+import tempfile
 from dotenv import load_dotenv
 from azure.storage.blob import BlobServiceClient
 
@@ -29,7 +30,13 @@ def load_model():
         container_client = blob_service_client.get_container_client(container_name)
         blob_client = container_client.get_blob_client(blob_name)
         model_data = blob_client.download_blob().readall()
-        model = YOLO(io.BytesIO(model_data))  # Load YOLO model from bytes
+        
+        # Save model data to a temporary file
+        with tempfile.NamedTemporaryFile(delete=False) as temp_model_file:
+            temp_model_file.write(model_data)
+            temp_model_path = temp_model_file.name
+        
+        model = YOLO(temp_model_path)  # Load YOLO model from the temporary file
         print("YOLO model loaded successfully from Azure Blob Storage.")
     except Exception as e:
         print(f"Error loading model from Azure Blob Storage: {e}")
