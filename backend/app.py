@@ -6,6 +6,7 @@ import cv2
 import io
 import os
 from dotenv import load_dotenv
+from azure.storage.blob import BlobServiceClient
 
 # Load environment variables from .env file
 load_dotenv()
@@ -14,13 +15,37 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": os.getenv("ORIGINS")}})  # Allow requests from specified origins
 
-print("💮💮💮 Loading YOLO model...")
-# Load YOLO model (Ensure "best.pt" is in the same directory)
-model = YOLO("best.pt")
+# Get Azure Blob Storage connection string from environment variable
+connect_str = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
+blob_service_client = BlobServiceClient.from_connection_string(connect_str)
+container_name = os.getenv("AZURE_BLOB_CONTAINER_NAME")
+blob_name = os.getenv("AZURE_BLOB_MODEL_PATH")  # Path to your model within the container
+
+model = None
+
+def load_model():
+    global model
+    try:
+        container_client = blob_service_client.get_container_client(container_name)
+        blob_client = container_client.get_blob_client(blob_name)
+        model_data = blob_client.download_blob().readall()
+        model = YOLO(io.BytesIO(model_data))  # Load YOLO model from bytes
+        print("YOLO model loaded successfully from Azure Blob Storage.")
+    except Exception as e:
+        print(f"Error loading model from Azure Blob Storage: {e}")
+        print(f"Container Name: {container_name}") 
+        print(f"Blob Name: {blob_name}")
+        return jsonify({"error": f"Failed to load model: {e}"}), 500
+
+
+with app.app_context():
+# def before_first_request():
+    print("💮 Loading YOLO model...")
+    load_model()
 
 @app.route("/")
 def home():
-    return jsonify({"message": "Hello, World!"})
+    return jsonify({"message": "Welcome to the YOLOv5 API!", "host": request.host, "url": request.url})
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -33,7 +58,6 @@ def predict():
     file_bytes = np.frombuffer(file.read(), np.uint8)
     image_array = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
 
-    # Run YOLO inference
     try:
         results = model.predict(image_array)
         predictions = {}
@@ -56,6 +80,7 @@ def predict():
                 if label not in predictions: 
                     predictions[label] = []
                 predictions[label].append(prediction)
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -69,5 +94,3 @@ if __name__ == "__main__":
     else:
         # Use Flask's built-in server for local development
         app.run(debug=True, host='0.0.0.0', port=5000)
-
-
