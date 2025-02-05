@@ -6,8 +6,6 @@ import { useToast } from '@/components/hooks/use-toast'
 import { ChartConfig } from '@/components/ui/chart'
 import { useState } from 'react'
 
-const API_URL = 'http://127.0.0.1:5000'
-
 const DashboardPage = () => {
   const initialDiseases: Disease[] = [
     { id: 'root_piece', label: 'Root Piece', count: 0, color: '#a02b5f' },
@@ -49,7 +47,7 @@ const DashboardPage = () => {
     formData.append('file', file)
 
     try {
-      const response = await fetch(`${API_URL}/predict`, {
+      const response = await fetch(`${process.env.API_URL}/predict`, {
         method: 'POST',
         body: formData,
       })
