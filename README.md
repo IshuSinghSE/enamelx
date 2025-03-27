@@ -1,36 +1,139 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# EnamelX: Front-End and Backend Overview
 
-## Getting Started
+## Tech Stack and Tools
+EnamelX is built using a combination of modern technologies and tools to ensure a seamless and efficient user experience. The stack includes:
+- **Next.js**: React framework for server-side rendering and static site generation.
+- **Tailwind CSS**: Utility-first CSS framework for styling.
+- **SHADCNUI**: Component library for building UI elements.
+- **Fabric.js**: JavaScript library for working with canvas and annotations.
+- **Python**: Programming language used for backend development.
+- **Flask**: Lightweight web framework for handling API requests.
+- **Ultralytics**: Library/tool used for model-related functions.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Folder Structure
+- **Frontend**:
+    - **.venv** : python Library & environment for backend
+    - **Backend**: Code for backend ( model and python code) 
+- **Backend**:
+    - **node_modules**: Required modules for frontend development
+    - **src**: code for frontend (NEXT.js)
+    - **public**: static assets for website (images, icons, illustration, etc)
+    - **.next & .vscode**  are temporary folder created automatically while development
+--- 
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Authorization Pages
+- **Sign-In/Sign-Out Pages**:  
+  - `src/app/(auth)/signin` - Sign-In functionality.  
+  - `src/app/(auth)/signup` - Sign-Up functionality.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Dashboard Components and Functionalities
+All functionalities of the root dashboard are mapped within the **dashboard components folder**:  
+- Path: `enamelx/src/components/dashboard/`
 
-## Learn More
+### Key Functional Files:
+- **`fileUtils.ts`**: File downloading and uploading.
+- **`DiseasePanel.tsx`**: Right-side panel for selecting disease options.
+- **`ImageViewer.tsx`**: Main Image Display canvas.
+- **`InfoChart.tsx` and `InfoPieChart.tsx`**: Displayed charts.
+- **`ViewerOptions.tsx`**: Left-side panel for annotations.
+- **`canvasUtils.ts`**: Functionalities of actions in `ViewerOptions.tsx`.
+- **`drawUtils.ts`**: Handles all annotation functionalities.
+- **`mouseEvents.ts`**: Enables mouse-based interaction with the X-ray image on canvas.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## UI and Styling
+### Main Pages:
+- **Main Dashboard Page**:  
+  - Path: `src/app/(root)/dashboard/page.tsx` - Serves as the main page display.
+  - This page imports all working components.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Utility Components:
+- **Global Styling**:
+  - `favicon` → website Logo/Icon
+  - `globals.css` → Tailwind CSS is used for styling.
+- **Page Structuring**:
+  - `layout.tsx` → Structuring the page.
+  - `Page.tsx` → Landing page (currently under development).
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Hooks and Notifications
+- Path: `src/components/hooks/use-toast.ts`  
+  Used for global functions like showing file upload or error notifications.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## Shared UI Components
+UI elements downloaded from the **SHADCNUI library**, available via terminal installation:  
+- Path: `src/components/ui/`
+
+### Reusable Components:
+- **`ActionButton.tsx`**: Buttons used across various pages.
+- **`AuthForm.tsx`**: Authorization page.
+- **`ProfileDropDown.tsx`**: Dashboard profile picture icon.
+- **`DiseaseSelect.tsx`**: Handles partial logic for disease selection.  
+  *Note: Props drilling is used instead of state management, which requires passing data across parent-child nodes.*
+- **Headers**:
+  - `Header.tsx` → Main page header.
+  - `LandingPageHeader.tsx` → Landing page header.
+
+---
+
+## State Management
+- Path: `src/contexts/ThemeProvider.tsx`  
+  State management is centralized here. Currently used for managing the dark-light theme.
+
+---
+
+## Utility Functions
+- **Basic Utility Functions**:
+  - Path: `src/lib/utils.ts`
+  - Examples: Password hashing, data manipulation.
+
+---
+
+## Backend Overview
+The backend includes two main files:  
+1. **`app.py`**: Handles backend logic.  
+2. **`requirements.txt`**: Specifies required libraries.
+
+### Additional Notes:
+- **`prediction.json`**: Used during testing (not mandatory).  
+- **`package.json`**: Platform-dependent file required during hosting.
+
+### API Calls:
+1. **Server Status**: Checks if the server or API routes are operational.
+2. **Model Predictions**: Feeds data to the model and retrieves predictions.
+
+---
+
+## Automated Testing
+- Path: `src/test`  
+  Used for automated testing (functionality exploration recommended).
+
+---
+
+## Static Media Assets
+- Path: `public/images`  
+  Contains static media assets like logos, reusable during development.
+
+---
+
+## Root Configuration Files
+Several configuration files in the root folder play key roles in maintaining project standards and functionality:
+- **`prettier.config.js`**: Configures Prettier for code formatting.
+- **`eslint.config.js`**: Lints JavaScript/TypeScript code for consistent styling and error prevention.
+- **`.gitignore`**: Specifies intentionally untracked files to ignore.
+- **`bun.lock`**: Dependency lock file for deterministic builds.
+- **`package.json`**: Contains metadata, dependencies, and scripts for the project.
+- **`postcss.config.js`**: Configures PostCSS for processing CSS files.
+- **`tailwind.config.ts`**: Configuration for customizing Tailwind CSS.
+- **`tsconfig.json`**: TypeScript configuration file for defining compiler options.
+
+---
+
