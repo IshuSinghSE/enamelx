@@ -4,7 +4,7 @@
 EnamelX is built using a combination of modern technologies and tools to ensure a seamless and efficient user experience. The stack includes:
 - **Next.js**: React framework for server-side rendering and static site generation.
 - **Tailwind CSS**: Utility-first CSS framework for styling.
-- **SHADCNUI**: Component library for building UI elements.
+- **SHADCNUI**: Component library for building UI elements. ( Material UI, chakra ui, mantine ui, daisyui, etc)
 - **Fabric.js**: JavaScript library for working with canvas and annotations.
 - **Python**: Programming language used for backend development.
 - **Flask**: Lightweight web framework for handling API requests.
@@ -128,11 +128,14 @@ The backend includes two main files:
 Several configuration files in the root folder play key roles in maintaining project standards and functionality:
 - **`prettierrc`**: Configures Prettier for code formatting.
 - **`prettierignore`**: Ignore Prettier code formatting for these file.
-- **`eslint.json`**: Lints JavaScript/TypeScript code for consistent styling and error prevention.
+- **`eslintrc.json`**: Lints JavaScript/TypeScript code for consistent styling and error prevention.
+- **`eslintignore`**: Ignore Linting for specified files.
 - **`.gitignore`**: Specifies intentionally untracked files to ignore.
+
+**These files are automatically created**
 - **`bun.lock`**: Dependency lock file for deterministic builds.
 - **`package.json`**: Contains metadata, dependencies, and scripts for the project.
-- **`postcss.config.js`**: Configures PostCSS for processing CSS files.
+- **`postcss.config.js`**: Nextjs Configures PostCSS for processing CSS files.
 - **`tailwind.config.ts`**: Configuration for customizing Tailwind CSS.
 - **`tsconfig.json`**: TypeScript configuration file for defining compiler options.
 - **`components.json`**: config file for ShadcnUI
