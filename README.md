@@ -126,14 +126,18 @@ The backend includes two main files:
 
 ## Root Configuration Files
 Several configuration files in the root folder play key roles in maintaining project standards and functionality:
-- **`prettier.config.js`**: Configures Prettier for code formatting.
-- **`eslint.config.js`**: Lints JavaScript/TypeScript code for consistent styling and error prevention.
+- **`prettierrc`**: Configures Prettier for code formatting.
+- **`prettierignore`**: Ignore Prettier code formatting for these file.
+- **`eslint.json`**: Lints JavaScript/TypeScript code for consistent styling and error prevention.
 - **`.gitignore`**: Specifies intentionally untracked files to ignore.
 - **`bun.lock`**: Dependency lock file for deterministic builds.
 - **`package.json`**: Contains metadata, dependencies, and scripts for the project.
 - **`postcss.config.js`**: Configures PostCSS for processing CSS files.
 - **`tailwind.config.ts`**: Configuration for customizing Tailwind CSS.
 - **`tsconfig.json`**: TypeScript configuration file for defining compiler options.
+- **`components.json`**: config file for ShadcnUI
+- **`next.config.ts`**: config file for NEXT.js
+
 
 ---
 
