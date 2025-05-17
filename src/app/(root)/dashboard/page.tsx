@@ -4,9 +4,12 @@ import DiseasePanel, { Disease } from '@/components/dashboard/DiseasePanel'
 import ImageViewer from '@/components/dashboard/ImageViewer'
 import { useToast } from '@/components/hooks/use-toast'
 import { ChartConfig } from '@/components/ui/chart'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const DashboardPage = () => {
+
+  // Initial diseases with default values 
+  // and colors for the chart
   const initialDiseases: Disease[] = [
     { id: 'root_piece', label: 'Root Piece', count: 0, color: '#a02b5f' },
     { id: 'crown', label: 'Crown', count: 0, color: '#41c8ff' },
@@ -30,7 +33,8 @@ const DashboardPage = () => {
   const [selectedDiseases, setSelectedDiseases] = useState<Disease[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [hasImage, setHasImage] = useState(false)
-  const [predictions, setPredictions] = useState({})
+  const [predictions, setPredictions] = useState<any>({})
+  const [confidenceThreshold, setConfidenceThreshold] = useState(50) // Default 50%
   const { toast } = useToast()
 
   const resetDiseasesToInitial = () => {
@@ -60,19 +64,39 @@ const DashboardPage = () => {
         throw new Error(data.error)
       }
 
-      const updatedDiseases = diseases.map((disease) => {
-        const count = data['prediction'][disease.id]?.length || 0
-        return { ...disease, count }
-      })
-
-      setDiseases(updatedDiseases)
+      // Store the raw predictions
       setPredictions(data.prediction)
+      
+      // Update disease counts initially
+      updateDiseaseCounts(data.prediction, confidenceThreshold)
+      
       toast({ description: 'Image successfully analyzed' })
     } catch (error) {
       toast({ description: 'Error analyzing image', variant: 'destructive' })
     } finally {
       setIsLoading(false)
     }
+  }
+  
+  // Update disease counts when confidence threshold changes
+  useEffect(() => {
+    if (Object.keys(predictions).length > 0) {
+      updateDiseaseCounts(predictions, confidenceThreshold)
+    }
+  }, [confidenceThreshold, predictions])
+  
+  // Function to update disease counts based on confidence threshold
+  const updateDiseaseCounts = (predictionData: any, threshold: number) => {
+    const updatedDiseases = diseases.map((disease) => {
+      const diseasePredictions = predictionData[disease.id] || []
+      // Filter predictions based on confidence threshold
+      const filteredPredictions = diseasePredictions.filter(
+        (prediction: any) => Math.round(prediction.confidence * 100) >= threshold
+      )
+      return { ...disease, count: filteredPredictions.length }
+    })
+    
+    setDiseases(updatedDiseases)
   }
 
   const chartData = diseases.map((disease) => ({
@@ -122,6 +146,7 @@ const DashboardPage = () => {
         setSelectedDiseases={setSelectedDiseases}
         resetDiseasesToInitial={resetDiseasesToInitial}
         resetSelectedDiseases={resetSelectedDiseases}
+        confidenceThreshold={confidenceThreshold}
       />
       {/* Right Panel - Options */}
       <DiseasePanel
@@ -133,6 +158,8 @@ const DashboardPage = () => {
         chartConfig={chartConfig}
         resetSelectedDiseases={resetSelectedDiseases}
         resetDiseasesToInitial={resetDiseasesToInitial}
+        confidenceThreshold={confidenceThreshold}
+        setConfidenceThreshold={setConfidenceThreshold}
       />
     </section>
   )

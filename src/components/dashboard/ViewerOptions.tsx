@@ -130,11 +130,11 @@ const ViewerOptions: React.FC<ViewerOptionsProps> = ({
         <div className="flex flex-wrap lg:gap-x-2 sm:col-span-4 md:col-span-6 lg:col-span-2">
           <ActionButton
             label="Upload"
-            icon={<Upload />}
+            icon={<Upload color="#eeeeee"/>}
             onClick={() => fileRef.current && handleFileUpload(fileRef)}
           />
           <ActionButton
-            label="Save"
+            label="Download"
             icon={<Download />}
             onClick={() => canvas && handleFileSave(canvas)}
             disabled={canvasObjects.length === 0}

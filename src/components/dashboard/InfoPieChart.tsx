@@ -31,14 +31,22 @@ export function InfoPieChart({ chartData, chartConfig }: { chartData: ChartData[
       <CardContent className="flex-1 pb-0">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[300px]"
+          className="mx-auto aspect-square max-w-[400px] h-[220px]"
         >
           <PieChart>
-            <Pie data={chartData} dataKey="visitors" />
-          <ChartTooltip content={<ChartTooltipContent nameKey={'disease'} hideLabel />} />
+            <Pie 
+              data={chartData} 
+              dataKey="visitors" 
+              cx="50%" 
+              cy="50%" 
+              innerRadius={35}
+              outerRadius={80}
+            />
+            <ChartTooltip content={<ChartTooltipContent nameKey={'disease'} hideLabel />} />
             <ChartLegend
               content={<ChartLegendContent nameKey="disease" />}
-              className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
+              className="-translate-y-2 flex-wrap gap-2 text-xs"
+              verticalAlign="bottom"
             />
           </PieChart>
         </ChartContainer>

@@ -14,13 +14,15 @@ load_dotenv()
 
 # Initialize Flask app
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": os.getenv("ORIGINS")}})  # Allow requests from specified origins
-
+if os.getenv("ENVIRONMENT") == "production":
 # Get Azure Blob Storage connection string from environment variable
-connect_str = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
-blob_service_client = BlobServiceClient.from_connection_string(connect_str)
-container_name = os.getenv("AZURE_BLOB_CONTAINER_NAME")
-blob_name = os.getenv("AZURE_BLOB_MODEL_PATH")  # Path to your model within the container
+    CORS(app, resources={r"/*": {"origins": os.getenv("ORIGINS")}})  # Allow requests from specified origins
+    connect_str = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
+    blob_service_client = BlobServiceClient.from_connection_string(connect_str)
+    container_name = os.getenv("AZURE_BLOB_CONTAINER_NAME")
+    blob_name = os.getenv("AZURE_BLOB_MODEL_PATH")  # Path to your model within the container
+else:
+    CORS(app, resources={r"/*": {"origins": '*'}})  # Allow requests from specified origins
 
 model = None
 
@@ -47,16 +49,17 @@ def load_model():
             with tempfile.NamedTemporaryFile(delete=False) as temp_model_file:
                 temp_model_file.write(model_data)
                 temp_model_path = temp_model_file.name
+            print("YOLO model loaded successfully from Azure Blob Storage.")    
         else:
-            print(f"Loading YOLO model from local file: {blob_name}")
             temp_model_path = 'best.pt'
+            print(f"Loading YOLO model from local file: {temp_model_path}")
         model = YOLO(temp_model_path)  # Load YOLO model from the temporary file
+        print("YOLO model loaded successfully from Storage.")
         
-        print("YOLO model loaded successfully from Azure Blob Storage.")
     except Exception as e:
         print(f"Error loading model from Azure Blob Storage: {e}")
-        print(f"Container Name: {container_name}") 
-        print(f"Blob Name: {blob_name}")
+        # print(f"Container Name: {container_name}") 
+        # print(f"Blob Name: {blob_name}")
         return jsonify({"error": f"Failed to load model: {e}"}), 500
 
 

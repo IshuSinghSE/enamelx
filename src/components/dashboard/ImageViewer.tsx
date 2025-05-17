@@ -1,5 +1,5 @@
 'use client' // For Next.js app router
-import { Canvas, FabricImage, FabricObject, Group, Rect } from 'fabric'
+import { Canvas, FabricImage, FabricObject, Group, Rect, Text } from 'fabric'
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 import { Button } from '../ui/button'
 import {
@@ -42,6 +42,7 @@ const ImageViewer = ({
   setSelectedDiseases,
   resetDiseasesToInitial, // Add this prop
   resetSelectedDiseases, // Add this prop
+  confidenceThreshold,
 }: {
   selectedDiseases: Disease[]
   setHasImage: Dispatch<SetStateAction<boolean>>
@@ -51,6 +52,7 @@ const ImageViewer = ({
   setSelectedDiseases: Dispatch<SetStateAction<Disease[]>>
   resetDiseasesToInitial: () => void
   resetSelectedDiseases: () => void
+  confidenceThreshold: number
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const fileRef = useRef<HTMLInputElement>(null)
@@ -158,30 +160,59 @@ const ImageViewer = ({
     ]
     canvas.getObjects('group').forEach((obj) => canvas.remove(obj))
 
-    const rects: FabricObject[] = []
+    // Create arrays to store rectangles and text separately
+    const rectangles: Rect[] = [];
+    const textLabels: Text[] = [];
 
     selectedDiseases.forEach((disease) => {
       const diseasePredictions = predictions[disease.id]
       if (diseasePredictions) {
-        diseasePredictions.forEach((prediction) => {
+        // Filter predictions based on confidence threshold
+        const filteredPredictions = diseasePredictions.filter(
+          prediction => Math.round(prediction.confidence * 100) >= confidenceThreshold
+        )
+
+        filteredPredictions.forEach((prediction) => {
           const [left, top, right, bottom] = prediction.bbox
-          const rect = new Rect({
+            const opacity = 0.45 // bounding box opacity, adjust as needed
+            const rect = new Rect({
             scaleX: canvasImage.scaleX,
             scaleY: canvasImage.scaleY,
             left: leftX + left * canvasImage.scaleX!,
             top: leftY + top * canvasImage.scaleY!,
             width: (right - left) * canvasImage.scaleX!,
             height: (bottom - top) * canvasImage.scaleY!,
-            fill: `${disease.color}22`,
-            stroke: disease.color,
+            fill: `${disease.color}`,
+            stroke: disease.color, // bounding box border color
+            strokeWidth: 2,
+            strokeUniform: true,
             selectable: false,
-          })
-          rects.push(rect)
+            opacity,
+            })
+           const text = new Text(`${Math.round(prediction.confidence * 100)}%`, {
+            left: leftX + left * canvasImage.scaleX! - 15,
+            top: leftY + top * canvasImage.scaleY! -15,
+            fontSize: 18,
+            fill: `${disease.color}`,
+            fontFamily: 'Arial',
+            fontWeight: 'bold',
+            strokeWidth: 0.3,
+            stroke: '#000',
+            opacity: 1,
+            })
+            
+          // Store rectangles and text in separate arrays
+          rectangles.push(rect);
+          textLabels.push(text);
         })
       }
     })
-
-    const newGroup = new Group([canvasImage, ...rects], {
+    
+    // Create arrays to store all the objects in proper z-index order
+    const allObjects = [canvasImage, ...rectangles, ...textLabels];
+    
+    // Create a group with all objects, in order of z-index
+    const newGroup = new Group(allObjects, {
       selectable: true,
       evented: true,
       cornerColor: '#0c8ce9',
@@ -196,24 +227,29 @@ const ImageViewer = ({
     canvas.setActiveObject(newGroup)
     setGroup(newGroup)
     canvas.renderAll()
-  }, [canvas, selectedDiseases, predictions, canvasImage])
+  }, [canvas, selectedDiseases, predictions, canvasImage, confidenceThreshold])
 
   useEffect(() => {
     if (!canvas || !canvasImage || !group) return
 
     const updateGroupScale = () => {
-      const scaleX = canvasImage.scaleX
-      const scaleY = canvasImage.scaleY
+      const imgScaleX = Number(canvasImage.scaleX)
+      const imgScaleY = Number(canvasImage.scaleY)
 
-      group.getObjects().forEach((obj) => {
+      // Recreate the group with the right scale values
+      const objects = group.getObjects()
+      
+      // Update scale for all annotations except the image
+      objects.forEach((obj) => {
         if (obj !== canvasImage) {
           obj.set({
-            scaleX: scaleX,
-            scaleY: scaleY,
+            scaleX: imgScaleX,
+            scaleY: imgScaleY
           })
         }
       })
-
+      
+      // Force re-render to apply changes
       group.setCoords()
       canvas.renderAll()
     }

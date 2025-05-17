@@ -3,6 +3,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { cn } from '@/lib/utils'
 import { useCallback, useEffect, useState } from 'react'
 import InfoChart from './InfoChart'
+import { Slider } from '@/components/ui/slider'
 
 export type Disease = {
   id: string
@@ -32,6 +33,8 @@ const DiseasePanel = ({
   chartConfig,
   resetSelectedDiseases, // Add this prop
   resetDiseasesToInitial, // Add this prop
+  confidenceThreshold,
+  setConfidenceThreshold,
 }: {
   diseases: Disease[]
   setSelectedDiseases: (diseases: Disease[]) => void
@@ -41,6 +44,8 @@ const DiseasePanel = ({
   chartConfig: ChartConfig
   resetSelectedDiseases: () => void // Add this prop type
   resetDiseasesToInitial: () => void // Add this prop type
+  confidenceThreshold: number
+  setConfidenceThreshold: (threshold: number) => void
 }) => {
   const [selectedDiseases, setSelectedDiseasesState] = useState<string[]>([])
 
@@ -69,9 +74,28 @@ const DiseasePanel = ({
   return (
     <div className="order-3 w-full flex-col items-start justify-start gap-4 border-l border-secondary bg-gradient-to-l from-neutral-800 to-stone-800 p-4 px-10 text-foreground md:w-64 md:px-4 lg:order-3 lg:flex lg:h-[calc(100vh-64px)]">
       <div className="mb-4">
-        <h2 className="text-md font-sora">AI Viewer</h2>
+        <h2 className="text-md font-sora">Disease Viewer</h2>
         <p className="text-xs font-noto-sans text-destructive-foreground">Select to highlight the diseases in the image</p>
       </div>
+      
+      {/* Confidence Threshold Slider */}
+      {hasImage && !isLoading && (
+        <div className="w-full mb-2">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm font-noto-sans">Confidence Threshold</span>
+            <span className="text-sm font-semibold">{confidenceThreshold}%</span>
+          </div>
+          <Slider 
+            defaultValue={[confidenceThreshold]} 
+            min={0} 
+            max={100} 
+            step={1}
+            onValueChange={(value: number[]) => setConfidenceThreshold(value[0])}
+            className="mb-2"
+          />
+        </div>
+      )}
+      
       {diseases.map((disease) => (
         <div
           key={disease.id}
@@ -94,6 +118,31 @@ const DiseasePanel = ({
           </div>
         </div>
       ))}
+
+      {isLoading && (
+        <div className="flex items-center justify-center w-full h-full">
+          <svg
+            className="animate-spin h-5 w-5 text-gray-200"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              fill="none"
+              strokeWidth="4"
+              stroke="currentColor"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 1 1 16 0A8 8 0 0 1 4 12z"
+            />
+          </svg>
+        </div>
+      )}
       {hasImage && !isLoading && (
         <div>
           <InfoChart chartData={chartData} chartConfig={chartConfig} />
