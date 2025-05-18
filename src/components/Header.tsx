@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import React from 'react'
 import { ProfileDropDown } from './ProfileDropDown'
+import { SupportModal } from './SupportModal'
 
 const Header: React.FC = () => {
   return (
@@ -15,7 +16,11 @@ const Header: React.FC = () => {
       </Link>
 
       <nav className="flex gap-4 text-lg font-normal"></nav>
-      <ProfileDropDown />
+
+      <div className="flex items-center gap-2">
+        <SupportModal />
+        <ProfileDropDown />
+      </div>
     </header>
   )
 }
