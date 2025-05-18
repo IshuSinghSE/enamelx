@@ -7,3 +7,8 @@ dill==0.3.9
 python-dotenv==1.0.1
 gunicorn==23.0.0
 azure-storage-blob==12.24.1
+# FastAPI and dependencies
+fastapi==0.112.0
+uvicorn==0.28.0
+python-multipart==0.0.9
+pydantic==2.6.1
