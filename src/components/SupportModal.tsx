@@ -67,7 +67,7 @@ export function SupportModal() {
         <SheetHeader>
           <SheetTitle>Report an Issue</SheetTitle>
           <SheetDescription>
-            Submit a bug report, feature request or any issue you're experiencing.
+            Submit a bug report, feature request or any issue you&apos;re experiencing.
           </SheetDescription>
         </SheetHeader>
         <form onSubmit={handleSubmit} className="space-y-4 py-4">
