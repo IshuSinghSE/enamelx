@@ -109,8 +109,8 @@ const ImageViewer = ({
 
     const updateCanvasSize = () => {
       const w = window.innerWidth
-      const width = w < 600 ? w - w * 0.15 : w < 900 ? w - w * 0.25 : 900
-      const height = w < 600 ? w - w * 0.15 : w < 900 ? w - w * 0.25 : 560
+      const width = w < 600 ? w - w * 0.15 : w < 800 ? w - w * 0.25 : 560
+      const height = w < 600 ? w - w * 0.15 : w < 800 ? w - w * 0.25 : 500
       canvas.setDimensions({ width, height })
       if (group) {
         setFullScreen(canvas, group)
@@ -285,13 +285,13 @@ const ImageViewer = ({
       {/* Add more action buttons as needed */}
 
       {/* Middle Container - Image/X-ray View */}
-      <div className="order-3 flex h-full flex-grow flex-col items-center justify-center rounded-lg p-4 lg:order-2">
-        <div className="relative h-full rounded-md border-4 border-border bg-background p-1 shadow-lg shadow-zinc-900">
+      <div className="order-3 flex h-full flex-grow flex-col items-center justify-center rounded-lg p-2 sm:p-3 md:p-4 lg:order-2 lg:max-w-[calc(100vw-290px)]">
+        <div className="relative h-full w-full rounded-md border-4 border-border bg-background p-1 shadow-lg shadow-zinc-900">
           {/* Image or X-ray content goes here */}
           <canvas
             id="canvas"
             ref={canvasRef}
-            className="h-[400px] w-[400px] rounded-md md:h-[560px] md:w-[900px]"
+            className="h-[380px] w-full max-w-[700px] rounded-md sm:h-[400px] md:h-[440px] lg:h-[500px]"
           />
           {!canvasImage && canvasObjects.length === 0 && (
             <div
