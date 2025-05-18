@@ -2,17 +2,8 @@
 import { Canvas, FabricImage, FabricObject, Group, Rect, Text } from 'fabric'
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 import { Button } from '../ui/button'
-import {
-  rotate,
-  setFullScreen,
-  zoomIn,
-  zoomOut
-} from './canvasUtils'
-import {
-  handleFileChange,
-  handleFileUpload,
-  resizeImage
-} from './fileUtils'
+import { rotate, setFullScreen, zoomIn, zoomOut } from './canvasUtils'
+import { handleFileChange, handleFileUpload, resizeImage } from './fileUtils'
 import { setupMouseEvents } from './mouseEvents'
 import ViewerOptions from './ViewerOptions'
 
@@ -109,8 +100,8 @@ const ImageViewer = ({
 
     const updateCanvasSize = () => {
       const w = window.innerWidth
-      const width = w < 600 ? w - w * 0.15 : w < 800 ? w - w * 0.25 : 560
-      const height = w < 600 ? w - w * 0.15 : w < 800 ? w - w * 0.25 : 500
+      const width = w < 600 ? w - w * 0.15 : w < 900 ? w - w * 0.25 : 900
+      const height = w < 600 ? w - w * 0.15 : w < 900 ? w - w * 0.25 : 560
       canvas.setDimensions({ width, height })
       if (group) {
         setFullScreen(canvas, group)
@@ -161,21 +152,22 @@ const ImageViewer = ({
     canvas.getObjects('group').forEach((obj) => canvas.remove(obj))
 
     // Create arrays to store rectangles and text separately
-    const rectangles: Rect[] = [];
-    const textLabels: Text[] = [];
+    const rectangles: Rect[] = []
+    const textLabels: Text[] = []
 
     selectedDiseases.forEach((disease) => {
       const diseasePredictions = predictions[disease.id]
       if (diseasePredictions) {
         // Filter predictions based on confidence threshold
         const filteredPredictions = diseasePredictions.filter(
-          prediction => Math.round(prediction.confidence * 100) >= confidenceThreshold
+          (prediction) =>
+            Math.round(prediction.confidence * 100) >= confidenceThreshold
         )
 
         filteredPredictions.forEach((prediction) => {
           const [left, top, right, bottom] = prediction.bbox
-            const opacity = 0.45 // bounding box opacity, adjust as needed
-            const rect = new Rect({
+          const opacity = 0.45 // bounding box opacity, adjust as needed
+          const rect = new Rect({
             scaleX: canvasImage.scaleX,
             scaleY: canvasImage.scaleY,
             left: leftX + left * canvasImage.scaleX!,
@@ -188,10 +180,10 @@ const ImageViewer = ({
             strokeUniform: true,
             selectable: false,
             opacity,
-            })
-           const text = new Text(`${Math.round(prediction.confidence * 100)}%`, {
+          })
+          const text = new Text(`${Math.round(prediction.confidence * 100)}%`, {
             left: leftX + left * canvasImage.scaleX! - 15,
-            top: leftY + top * canvasImage.scaleY! -15,
+            top: leftY + top * canvasImage.scaleY! - 15,
             fontSize: 18,
             fill: `${disease.color}`,
             fontFamily: 'Arial',
@@ -199,18 +191,18 @@ const ImageViewer = ({
             strokeWidth: 0.3,
             stroke: '#000',
             opacity: 1,
-            })
-            
+          })
+
           // Store rectangles and text in separate arrays
-          rectangles.push(rect);
-          textLabels.push(text);
+          rectangles.push(rect)
+          textLabels.push(text)
         })
       }
     })
-    
+
     // Create arrays to store all the objects in proper z-index order
-    const allObjects = [canvasImage, ...rectangles, ...textLabels];
-    
+    const allObjects = [canvasImage, ...rectangles, ...textLabels]
+
     // Create a group with all objects, in order of z-index
     const newGroup = new Group(allObjects, {
       selectable: true,
@@ -238,17 +230,17 @@ const ImageViewer = ({
 
       // Recreate the group with the right scale values
       const objects = group.getObjects()
-      
+
       // Update scale for all annotations except the image
       objects.forEach((obj) => {
         if (obj !== canvasImage) {
           obj.set({
             scaleX: imgScaleX,
-            scaleY: imgScaleY
+            scaleY: imgScaleY,
           })
         }
       })
-      
+
       // Force re-render to apply changes
       group.setCoords()
       canvas.renderAll()
@@ -291,7 +283,7 @@ const ImageViewer = ({
           <canvas
             id="canvas"
             ref={canvasRef}
-            className="h-[380px] w-full max-w-[700px] rounded-md sm:h-[400px] md:h-[440px] lg:h-[500px]"
+            className="h-[400px] w-[400px] rounded-md md:h-[560px] md:w-[800px]"
           />
           {!canvasImage && canvasObjects.length === 0 && (
             <div
@@ -310,7 +302,14 @@ const ImageViewer = ({
                       if (file) {
                         fetchPredictions(file)
                       }
-                      handleFileChange(e, canvas, setImageSrc, setCanvasImage, setHasImage, setGroup)
+                      handleFileChange(
+                        e,
+                        canvas,
+                        setImageSrc,
+                        setCanvasImage,
+                        setHasImage,
+                        setGroup
+                      )
                     }
                   }}
                   style={{ display: 'none' }}
