@@ -84,3 +84,36 @@
     display: none;
   }
 }
+
+
+@layer components {
+  /* Component-specific utility classes */
+  
+  /* Feature cards */
+  .feature-card {
+    @apply relative p-6 rounded-2xl bg-card shadow-md hover:shadow-lg transition-shadow duration-300;
+  }
+
+  .feature-icon {
+    @apply w-16 h-16 flex items-center justify-center rounded-full bg-primary/10 text-primary mb-4;
+  }
+
+  /* Section styling */
+  .section-title {
+    @apply text-3xl md:text-4xl font-bold text-foreground mb-4;
+  }
+
+  .section-subtitle {
+    @apply text-lg text-muted-foreground mb-8 max-w-2xl mx-auto;
+  }
+
+  /* Button variants */
+  .cta-button {
+    @apply bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-2 px-6 rounded-full transition-colors duration-200;
+  }
+
+  .cta-button-outline {
+    @apply border-2 border-primary text-primary hover:bg-primary/5 font-medium py-2 px-6 rounded-full transition-colors duration-200;
+  }
+}
+

@@ -4,6 +4,7 @@ import './globals.css'
 import Header from '@/components/Header'
 import { ThemeProvider } from '@/contexts/ThemeProvider'
 
+
 const sora = Sora({
     variable: '--font-sora',
     subsets: ['latin'],
@@ -31,7 +32,7 @@ export default function RootLayout({
             <body
                 className={`${sora.variable} ${notoSans.variable} antialiased`}
             >
-                <ThemeProvider attribute="class" defaultTheme="dark" >
+                <ThemeProvider>
                     {children}
                 </ThemeProvider>
             </body>
