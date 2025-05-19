@@ -23,7 +23,7 @@ const Hero = () => {
           </h1>
           <p className="text-lg text-muted-foreground mb-8">
             Our team of dentists and developers creates AI-driven solutions to enhance dental diagnostics. 
-            With advanced technology, we're driving greater accuracy in oral healthcare for a healthier future.
+            With advanced technology, we&apos;re driving greater accuracy in oral healthcare for a healthier future.
           </p>
           <div className="flex space-x-4">
             <Link
