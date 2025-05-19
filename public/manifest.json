@@ -1,0 +1,23 @@
+{
+    "name": "EnamelX",
+    "short_name": "EnamelX",
+    "icons": [
+        {
+            "src": "/icons/android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/android-chrome-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+
+    "description": "EnamelX AI is a web-based application that provides AI-powered solutions for dental professionals.",
+    "lang": "en-US",
+    "dir": "ltr",
+
+    "display": "standalone",
+    "start_url": "."
+}
