@@ -1,4 +1,5 @@
 # EnamelX: Front-End and Backend Overview
+<img width="1348" height="683" alt="Screenshot 2025-02-04 215249" src="https://github.com/user-attachments/assets/ad686d1a-04e0-4cc3-b081-e74f1023f28e" />
 
 ## Tech Stack and Tools
 
